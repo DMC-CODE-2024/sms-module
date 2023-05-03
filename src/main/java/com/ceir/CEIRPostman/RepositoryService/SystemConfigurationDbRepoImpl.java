@@ -1,4 +1,5 @@
 package com.ceir.CEIRPostman.RepositoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ceir.CEIRPostman.Repository.SystemConfigurationDbRepository;
@@ -19,5 +20,15 @@ public class SystemConfigurationDbRepoImpl {
 	catch(Exception e) {
 		return null;
 	}
+	}
+
+	public SystemConfigurationDb saveConfigDb(SystemConfigurationDb systemConfigurationDb) {
+
+		try {
+			return SystemConfigurationDbRepo.save(systemConfigurationDb);
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 }

@@ -31,22 +31,9 @@ public class SmsUtil {
 	@Autowired
 	RunningAlertRepoService alertDbRepo;
 
-	public void setBatchSize(int batch,int noOfElements) {
-		if(noOfElements<batch) {
-			logger.info("if total sms less than batch size");
-			logger.info("sms array size: "+noOfElements);
-			messages = new String[noOfElements];
-			numbers = new String[noOfElements];
-			batchSize=noOfElements;
-			log.info("batch size: "+batchSize);
-		}
-		else {
-			logger.info("if total sms greater than or equals to batch size");
-			messages = new String[batch];
-			numbers = new String[batch];
-			batchSize=batch;
-			log.info("batch size: "+batchSize);
-		}
+	public void setBatchSize(int noOfElements) {
+		this.numbers = new String[noOfElements];
+		this.messages = new String[noOfElements];
 	}
 	public void setIndexZero() {
 		messageIndex = 0;

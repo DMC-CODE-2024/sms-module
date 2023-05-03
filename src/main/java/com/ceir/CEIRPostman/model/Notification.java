@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Notification  implements Serializable{
@@ -28,137 +29,186 @@ public class Notification  implements Serializable{
 	@UpdateTimestamp
 	private LocalDateTime modifiedOn;
 
-	private String channelType;
+	@Column(length = 20, nullable = false)
+	private String channelType="";
 
-	@Column(length = 1000)
-	private String message;
+	@Column(length = 1000, nullable = false)
+	private String message="";
 
 	private Long userId;
 
 	private Long featureId;
 
-	private String featureTxnId;
+	@Column(length = 20, nullable = false)
+	private String featureTxnId="";
 
-	private String featureName;
+	@Column(length = 50, nullable = false)
+	private String featureName="";
 
-	private String subFeature;
+	@Column(length = 50, nullable = false)
+	private String subFeature="";
 
+	@Column(nullable = false)
 	private Integer status;
 
-	private String subject;
+	@Column(length = 255, nullable = false)
+	private String subject="";
 
+	@Column(nullable = false)
 	private Integer retryCount;
-	
-	@Column(length = 10)
-	private String referTable;
-	
-	@Column(length = 20)
-	private String roleType;
-	
-	@Column(length = 50)
-	private String receiverUserType;
-	
-	private Integer authorityStatus;
+
+	@Column(length = 50, nullable = false)
+	private String referTable="";
+
+	@Column(length = 30, nullable = false)
+	private String roleType="";
+
+	@Column(length = 30, nullable = false)
+	private String receiverUserType="";
+
+
+	@Column(length = 100, nullable = false)
+	private String email="";
+
+	@Column(length = 20, nullable = false)
+	private String msisdn="";
+
+	@Column(length = 20, nullable = false, unique = true)
+	private String operatorName="";
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime notificationSentTime;
+
+	@Column(length = 40, nullable = false, unique = true)
+	private String corelationId;
+
+	@Column(nullable = false)
+	private String msgLang;
+
+	@Column
+	private String deliveryStatus;
+
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	private LocalDateTime deliveryTime;
 
 	public Notification() {
 
 	}
 
-	public Notification(String channelType, String message, Long userId, Long featureId, String featureName, 
-			String subFeature, String featureTxnId, String subject, Integer retryCount, String referTable,
-			String roleType, String receiverUserType) {
+	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, String deliveryStatus, LocalDateTime deliveryTime) {
+		this.id = id;
+		this.createdOn = createdOn;
+		this.modifiedOn = modifiedOn;
 		this.channelType = channelType;
 		this.message = message;
 		this.userId = userId;
 		this.featureId = featureId;
+		this.featureTxnId = featureTxnId;
 		this.featureName = featureName;
 		this.subFeature = subFeature;
-		this.featureTxnId = featureTxnId;
-		this.status=status;
+		this.status = status;
 		this.subject = subject;
 		this.retryCount = retryCount;
 		this.referTable = referTable;
 		this.roleType = roleType;
 		this.receiverUserType = receiverUserType;
-	}
-
-
-	public String getReceiverUserType() {
-		return receiverUserType;
-	}
-
-	public void setReceiverUserType(String receiverUserType) {
-		this.receiverUserType = receiverUserType;
+		this.email = email;
+		this.msisdn = msisdn;
+		this.operatorName = operatorName;
+		this.notificationSentTime = notificationSentTime;
+		this.corelationId = corelationId;
+		this.msgLang = msgLang;
+		this.deliveryStatus = deliveryStatus;
+		this.deliveryTime = deliveryTime;
 	}
 
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public LocalDateTime getCreatedOn() {
 		return createdOn;
 	}
+
 	public void setCreatedOn(LocalDateTime createdOn) {
 		this.createdOn = createdOn;
 	}
+
 	public LocalDateTime getModifiedOn() {
 		return modifiedOn;
 	}
+
 	public void setModifiedOn(LocalDateTime modifiedOn) {
 		this.modifiedOn = modifiedOn;
 	}
+
 	public String getChannelType() {
 		return channelType;
 	}
+
 	public void setChannelType(String channelType) {
 		this.channelType = channelType;
 	}
+
 	public String getMessage() {
 		return message;
 	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
 	public Long getUserId() {
 		return userId;
 	}
+
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
 	public Long getFeatureId() {
 		return featureId;
 	}
+
 	public void setFeatureId(Long featureId) {
 		this.featureId = featureId;
 	}
-	public String getFeatureName() {
-		return featureName;
-	}
-	public void setFeatureName(String featureName) {
-		this.featureName = featureName;
-	}
-	public String getSubFeature() {
-		return subFeature;
-	}
-	public void setSubFeature(String subFeature) {
-		this.subFeature = subFeature;
-	}
+
 	public String getFeatureTxnId() {
 		return featureTxnId;
 	}
+
 	public void setFeatureTxnId(String featureTxnId) {
 		this.featureTxnId = featureTxnId;
 	}
+
+	public String getFeatureName() {
+		return featureName;
+	}
+
+	public void setFeatureName(String featureName) {
+		this.featureName = featureName;
+	}
+
+	public String getSubFeature() {
+		return subFeature;
+	}
+
+	public void setSubFeature(String subFeature) {
+		this.subFeature = subFeature;
+	}
+
 	public Integer getStatus() {
 		return status;
 	}
+
 	public void setStatus(Integer status) {
 		this.status = status;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 	public String getSubject() {
@@ -176,7 +226,7 @@ public class Notification  implements Serializable{
 	public void setRetryCount(Integer retryCount) {
 		this.retryCount = retryCount;
 	}
-	
+
 	public String getReferTable() {
 		return referTable;
 	}
@@ -193,53 +243,106 @@ public class Notification  implements Serializable{
 		this.roleType = roleType;
 	}
 
-	public Integer getAuthorityStatus() {
-		return authorityStatus;
+	public String getReceiverUserType() {
+		return receiverUserType;
 	}
 
-	public void setAuthorityStatus(Integer authorityStatus) {
-		this.authorityStatus = authorityStatus;
+	public void setReceiverUserType(String receiverUserType) {
+		this.receiverUserType = receiverUserType;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMsisdn() {
+		return msisdn;
+	}
+
+	public void setMsisdn(String msisdn) {
+		this.msisdn = msisdn;
+	}
+
+	public String getOperatorName() {
+		return operatorName;
+	}
+
+	public void setOperatorName(String operatorName) {
+		this.operatorName = operatorName;
+	}
+
+	public LocalDateTime getNotificationSentTime() {
+		return notificationSentTime;
+	}
+
+	public void setNotificationSentTime(LocalDateTime notificationSentTime) {
+		this.notificationSentTime = notificationSentTime;
+	}
+
+	public String getCorelationId() {
+		return corelationId;
+	}
+
+	public void setCorelationId(String corelationId) {
+		this.corelationId = corelationId;
+	}
+
+	public String getMsgLang() {
+		return msgLang;
+	}
+
+	public void setMsgLang(String msgLang) {
+		this.msgLang = msgLang;
+	}
+
+	public String getDeliveryStatus() {
+		return deliveryStatus;
+	}
+
+	public void setDeliveryStatus(String deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
+	}
+
+	public LocalDateTime getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(LocalDateTime deliveryTime) {
+		this.deliveryTime = deliveryTime;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Notification [id=");
-		builder.append(id);
-		builder.append(", createdOn=");
-		builder.append(createdOn);
-		builder.append(", modifiedOn=");
-		builder.append(modifiedOn);
-		builder.append(", channelType=");
-		builder.append(channelType);
-		builder.append(", message=");
-		builder.append(message);
-		builder.append(", userId=");
-		builder.append(userId);
-		builder.append(", featureId=");
-		builder.append(featureId);
-		builder.append(", featureTxnId=");
-		builder.append(featureTxnId);
-		builder.append(", featureName=");
-		builder.append(featureName);
-		builder.append(", subFeature=");
-		builder.append(subFeature);
-		builder.append(", status=");
-		builder.append(status);
-		builder.append(", subject=");
-		builder.append(subject);
-		builder.append(", retryCount=");
-		builder.append(retryCount);
-		builder.append(", referTable=");
-		builder.append(referTable);
-		builder.append(", roleType=");
-		builder.append(roleType);
-		builder.append(", receiverUserType=");
-		builder.append(receiverUserType);
-		builder.append(", authorityStatus=");
-		builder.append(authorityStatus);
-		builder.append("]");
-		return builder.toString();
+		final StringBuilder sb = new StringBuilder("Notification{");
+		sb.append("id=").append(id);
+		sb.append(", createdOn=").append(createdOn);
+		sb.append(", modifiedOn=").append(modifiedOn);
+		sb.append(", channelType='").append(channelType).append('\'');
+		sb.append(", message='").append(message).append('\'');
+		sb.append(", userId=").append(userId);
+		sb.append(", featureId=").append(featureId);
+		sb.append(", featureTxnId='").append(featureTxnId).append('\'');
+		sb.append(", featureName='").append(featureName).append('\'');
+		sb.append(", subFeature='").append(subFeature).append('\'');
+		sb.append(", status=").append(status);
+		sb.append(", subject='").append(subject).append('\'');
+		sb.append(", retryCount=").append(retryCount);
+		sb.append(", referTable='").append(referTable).append('\'');
+		sb.append(", roleType='").append(roleType).append('\'');
+		sb.append(", receiverUserType='").append(receiverUserType).append('\'');
+		sb.append(", email='").append(email).append('\'');
+		sb.append(", msisdn='").append(msisdn).append('\'');
+		sb.append(", operatorName='").append(operatorName).append('\'');
+		sb.append(", notificationSentTime=").append(notificationSentTime);
+		sb.append(", corelationId='").append(corelationId).append('\'');
+		sb.append(", msgLang='").append(msgLang).append('\'');
+		sb.append(", deliveryStatus='").append(deliveryStatus).append('\'');
+		sb.append(", deliveryTime=").append(deliveryTime);
+		sb.append('}');
+		return sb.toString();
 	}
-
 }

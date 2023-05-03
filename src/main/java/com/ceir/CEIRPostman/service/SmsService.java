@@ -1,8 +1,11 @@
 package com.ceir.CEIRPostman.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
+import com.ceir.CEIRPostman.constants.OperatorTypes;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +55,6 @@ public class SmsService implements Runnable {
      @Autowired
      UserTempRepoService userTempRepoService;
 
-     @Value("${type}")
-     String type;
-
      @Autowired
      RunningAlertRepoService alertDbRepo;
 
@@ -64,219 +64,180 @@ public class SmsService implements Runnable {
      @Autowired
      AuthorityRepoService authorityRepo;
 
+     @Autowired
+     SmsSendFactory smsSendFactory;
+
      private final Logger log = Logger.getLogger(getClass());
 
-     public void run() {
-          SystemConfigurationDb batchSizeData = systemConfigRepoImpl.getDataByTag("Total_email_Send_InSec");
-          SystemConfigurationDb emailProcessSleep = systemConfigRepoImpl.getDataByTag("EmailProcess_Sleep");
-          SystemConfigurationDb sleepTps = systemConfigRepoImpl.getDataByTag("Email_TPS_Milli_Sec");
-          SystemConfigurationDb fromEmail = systemConfigRepoImpl.getDataByTag("Email_Username");
-          SystemConfigurationDb emailRetryCount = systemConfigRepoImpl.getDataByTag("Email_Retry_Count");
-          //SystemConfigurationDb authorityMailSend = systemConfigRepoImpl.getDataByTag("Reporting_Authority_Mail_Status");
-          //MessageConfigurationDb messageDb = messageRepo.getByTag("Reporting_Authority_Notification");
-          Integer sleepTimeinMilliSec = 0;
-          Integer emailretrycountValue = 0;
-          //Integer authorityStatusValue = 0;
-          try {
-               emailretrycountValue = Integer.parseInt(emailRetryCount.getValue());
-               log.info("email retry count value: " + emailRetryCount.getValue());
-          } catch (Exception e) {
-               RunningAlertDb alertDb = new RunningAlertDb("alert008", "sms retry count value not found in db", 0);
-               alertDbRepo.saveAlertDb(alertDb);
-               log.info(e.toString());
-          }
-          /*
-		 * try { authorityStatusValue = Integer.parseInt(authorityMailSend.getValue());
-		 * log.info("Authority mail status value: " + authorityMailSend.getValue()); }
-		 * catch (Exception e) { RunningAlertDb alertDb = new RunningAlertDb("alert010",
-		 * "authority email status value not found in db", 0);
-		 * alertDbRepo.saveAlertDb(alertDb); log.info(e.toString()); }
-           */
-          try {
-               sleepTimeinMilliSec = Integer.parseInt(sleepTps.getValue());
+    private final String operatorNameArg;
 
+    public SmsService(String operatorName) {
+        this.operatorNameArg = operatorName;
+    }
+     public void run() {
+          String type = "SMS";
+          String operatorName = null;
+          try{
+              operatorName = OperatorTypes.valueOf(operatorNameArg.toUpperCase()).getValue();
+          } catch (IllegalArgumentException e) {
+              RunningAlertDb alertDb = new RunningAlertDb("Alert1205", "Operator " + operatorNameArg + " does not exist", 0);
+              alertDbRepo.saveAlertDb(alertDb);
+          }
+          SystemConfigurationDb tps;
+          SystemConfigurationDb smsUrl;
+          SystemConfigurationDb smsRetryCount = systemConfigRepoImpl.getDataByTag("sms_retry_count");
+          SystemConfigurationDb fromSender;
+          SystemConfigurationDb sleepTps = systemConfigRepoImpl.getDataByTag("sms_retry_interval");
+          Integer smsRetryCountValue = 0;
+          Integer sleepTimeinMilliSec = 0;
+          Integer tpsValue = 0;
+          String from = null;
+          try {
+              if (type == null) {
+                  tps = systemConfigRepoImpl.getDataByTag("default_sms_tps");
+                  smsUrl = systemConfigRepoImpl.getDataByTag("default_sms_url");
+                  fromSender = systemConfigRepoImpl.getDataByTag("default_sender_id");
+              } else {
+                  tps = systemConfigRepoImpl.getDataByTag(type+"_sms_tps");
+                  smsUrl = systemConfigRepoImpl.getDataByTag(type+"_sms_tps");
+                  fromSender = systemConfigRepoImpl.getDataByTag(type+"_sender_id");
+//              SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag(type+"_username");
+//              SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag(type+"_password");
+              }
+               smsRetryCountValue = Integer.parseInt(smsRetryCount.getValue());
+               sleepTimeinMilliSec = Integer.parseInt(sleepTps.getValue());
+               from  = fromSender.getValue();
+               tpsValue = Integer.parseInt(tps.getValue());
+               log.info("sms retry count value: " + smsRetryCountValue + ", sms retry interval: " + sleepTimeinMilliSec + " and tps: " + tps);
           } catch (Exception e) {
+               RunningAlertDb alertDb = new RunningAlertDb("Alert1202", "DB connection OK but failed to\n" +
+                       "read configuration value", 0);
+               alertDbRepo.saveAlertDb(alertDb);
                log.info(e.toString());
           }
           while (true) {
                log.info("inside Sms process");
-               int batchSize = 0;
-               if (batchSizeData != null) {
-                    log.info("no of sms per second value from db: " + batchSizeData.getValue());
-                    batchSize = Integer.parseInt(batchSizeData.getValue());
-               } else {
-                    batchSize = 1;
-               }
-
                try {
                     log.info("inside Sms process");
-                    log.info("going to fetch data from notificatio table by status=1 and channel type= " + type);
-                    List<Notification> notificationData = notificationRepoImpl.dataByStatusAndChannelType(1, type);
+                    log.info("going to fetch data from notification table for operator="+operatorName+", status=0, retryCount=0 and channel type="+type);
+                    List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorName, type);
                     int totalMailsent = 0;
                     int totalMailNotsent = 0;
-
-                    if (notificationData.isEmpty() == false) {
+                    int smsSentCount = 0;
+                    long tsms = System.currentTimeMillis();
+                    if (!notificationData.isEmpty()) {
                          log.info("notification data is not empty and size is " + notificationData.size());
-                         //SystemConfigurationDb emailBodyFooter = systemConfigRepoImpl.getDataByTag("mail_signature");
-                         int sNo = 0;
-                         emailUtil.setBatchSize(batchSize, notificationData.size());
                          for (Notification notification : notificationData) {
-                              log.info("notification data id= " + notification.getId());
-                              sNo++;
-                              String body = new String();
-                              body = notification.getMessage();
-                              /*
-						 * if (emailBodyFooter != null) { body = body + "\n" +
-						 * emailBodyFooter.getValue(); }
-                               */
-                              String toEmail = "";
-                              if (Objects.nonNull(notification.getUserId()) && notification.getUserId() != 0) {
-                                   if (notification.getReferTable() != null) {
-                                        log.info("refer Table: " + notification.getReferTable());
-                                        if ("END_USER".equalsIgnoreCase(notification.getReferTable())) {
-                                             EndUserDB endUser = endUserRepoService.getById(notification.getUserId());
-                                             if (Objects.nonNull(endUser)) {
-                                                  if (Objects.nonNull(endUser.getPhoneNo())) {
-                                                       toEmail = endUser.getPhoneNo();
-                                                  }
-
-                                             } else {
-                                                  log.info("no data found for this userid: " + notification.getUserId() + " in end user table");
-                                             }
-
-                                        } else if ("user_temp".equalsIgnoreCase(notification.getReferTable())) {
-                                             UserTemporarydetails details = userTempRepoService
-                                                     .getUserTempByUserId(notification.getUserId());
-                                             if (Objects.nonNull(details)) {
-                                                  if (Objects.nonNull(details.getMobileNo())) {
-                                                       toEmail = details.getMobileNo();
-                                                  }
-                                             } else {
-                                                  log.info("no data found for this userid: " + notification.getUserId() + " in UserTemporarydetails  table");
-
-                                             }
-
-                                        } else {
-                                             User user = userRepoService.getById(notification.getUserId());
-                                             if (Objects.nonNull(user)) {
-                                                  if (Objects.nonNull(user.getUserProfile().getPhoneNo())) {
-                                                       toEmail = user.getUserProfile().getPhoneNo();
-                                                  }
-
-                                             } else {
-                                                  log.info("no data found for this userid: " + notification.getUserId() + " in users  table");
-
-                                             }
-
-                                             /*
-									 * if(Objects.nonNull(notification.getAuthorityStatus())) {
-									 * log.info("authority status: "+notification.getAuthorityStatus());
-									 * if(notification.getAuthorityStatus()==1) { if
-									 * (Objects.nonNull(user.getUserProfile().getAuthorityEmail()) &&
-									 * authorityStatusValue == 1) { authorityEmail =
-									 * user.getUserProfile().getAuthorityEmail();
-									 * log.info("authorityEmail:  "+authorityEmail); emailUtil.increaseBatchSize();
-									 * } } }
-                                              */
-                                        }
-                                   } else {
-                                        User user = userRepoService.getById(notification.getUserId());
-
-                                        if (Objects.nonNull(user.getUserProfile().getPhoneNo())) {
-                                             toEmail = user.getUserProfile().getPhoneNo();
-                                        }
-                                        /*
-								 * if(Objects.nonNull(notification.getAuthorityStatus())) {
-								 * log.info("authority status: "+notification.getAuthorityStatus());
-								 * if(notification.getAuthorityStatus()==1) { if
-								 * (Objects.nonNull(user.getUserProfile().getAuthorityEmail()) &&
-								 * authorityStatusValue == 1) { authorityEmail =
-								 * user.getUserProfile().getAuthorityEmail();
-								 * log.info("authorityEmail:  "+authorityEmail); emailUtil.increaseBatchSize();
-								 * } } }
-                                         */
-
-                                   }
-
-                                   boolean emailStatus = false;
-
-                                   if (toEmail != null && !toEmail.isEmpty()) {
-                                        log.info("to Sms  " + toEmail);
-                                        //validator regex??
-                                        if (emailUtil.emailValidator(toEmail)) {
-                                             //String message=body.replace("\\n", "\n");
-                                             emailStatus = emailUtil.sendEmail(toEmail, fromEmail.getValue(),
-                                                     notification.getSubject(), body, notificationData.size(), sNo,
-                                                     sleepTimeinMilliSec);
-                                             if (emailStatus) {
-                                                  notification.setStatus(0);
-                                                  totalMailsent++;
-                                             } else {
-                                                  notification.setRetryCount(notification.getRetryCount() + 1);
-                                                  if (notification.getRetryCount() >= emailretrycountValue) {
-                                                       notification.setStatus(2);
-                                                  }
-                                                  totalMailNotsent++;
-                                             }
-
-                                             /*
-									 * if (authorityEmail != null && !authorityEmail.isEmpty()) { if
-									 * (emailUtil.emailValidator(authorityEmail)) { body=body.replace("\\n", "\n");
-									 * String content=messageDb.getValue().replace("\\n", "\n"); message =content +
-									 * "\n" +body; log.info("message content in case of authority email: " +
-									 * message);
-									 * log.info("authorityEmail: "+authorityEmail+" fromEmail: "+fromEmail.getValue(
-									 * )+"getSubject: "+messageDb.getSubject()); emailStatus =
-									 * emailUtil.sendEmail(authorityEmail, fromEmail.getValue(),
-									 * messageDb.getSubject(), message, notificationData.size(), sNo,
-									 * sleepTimeinMilliSec); if (emailStatus) { totalMailsent++;
-									 * AuthorityNotification authoritNoti = new AuthorityNotification(
-									 * notification.getChannelType(), message, notification.getUserId(),
-									 * notification.getFeatureId(), notification.getFeatureTxnId(),
-									 * notification.getFeatureName(), notification.getSubFeature(),
-									 * notification.getStatus(), notification.getSubject(),
-									 * notification.getRetryCount(), notification.getReferTable(),
-									 * notification.getRoleType(), notification.getReceiverUserType());
-									 * authorityRepo.saveNotification(authoritNoti);
-									 * 
-									 * } else { totalMailNotsent++; } }
-									 * 
-									 * }
-                                              */
-                                        } else {
-                                             log.info("this to sms is invalid: " + toEmail);
-                                             notification.setRetryCount(notification.getRetryCount() + 1);
-                                             notification.setStatus(2);
-                                        }
-
-                                   } else {
-                                        log.info("if Sms value for this user id " + notification.getUserId()
-                                                + " not found in db ");
-                                        notification.setRetryCount(notification.getRetryCount() + 1);
-                                        notification.setStatus(2);
-                                   }
-
-                              } else {
-                                   notification.setRetryCount(notification.getRetryCount() + 1);
-                                   notification.setStatus(2);
-                                   log.info("user id for this notification is either null or 0");
-                              }
-
-                              notificationRepo.save(notification);
+                             if (smsSentCount >= tpsValue) {
+                                 long tsdiff = System.currentTimeMillis() - tsms;
+                                 if (tsdiff < 1000) {
+                                     smsSentCount = 0;
+                                     Thread.sleep(1000 - tsdiff);
+                                 } else if (tsdiff == 1000) {
+                                     smsSentCount = 0;
+                                 } else {
+                                     smsSentCount = 0;
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1204", "TPS not achieved", 0);
+                                     alertDbRepo.saveAlertDb(alertDb);
+                                 }
+                                 tsms = System.currentTimeMillis();
+                             }
+                             log.info("notification data id= " + notification.getId());
+                             if (Objects.nonNull(notification.getMsisdn()) && Objects.nonNull(notification.getOperatorName())) {
+                                 String body = notification.getMessage();
+                                 SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(notification.getOperatorName());
+                                 String correlationId = UUID.randomUUID().toString();
+                                 String smsStatus = smsProvider.sendSms(notification.getMsisdn(), from, notification.getMessage(), correlationId, notification.getMsgLang());
+                                 if (smsStatus == "SUCCESS") {
+                                     LocalDateTime now = LocalDateTime.now();
+                                     notification.setStatus(1);
+                                     notification.setNotificationSentTime(now);
+                                     notification.setCorelationId(correlationId);
+                                 } else if (smsStatus == "FAILED") {
+                                     //check retry count if >3 update status to 2 else increase retry count|| if 5xx then raise alarm
+                                     if (notification.getRetryCount() < smsRetryCountValue) {
+                                         notification.setRetryCount(notification.getRetryCount() + 1);
+                                     } else {
+                                         notification.setStatus(2);
+                                     }
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1206", "Send SMS failed for " + operatorName, 0);
+                                     alertDbRepo.saveAlertDb(alertDb);
+                                 } else if (smsStatus == "SERVICE_UNAVAILABLE") {
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorName + " is down", 0);
+                                     alertDbRepo.saveAlertDb(alertDb);
+                                 } else {
+                                     log.info("error in sending Sms for "+operatorName);
+                                     //some alert
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1201", "Database connection failed or login failed due to credentials", 0);
+                                     alertDbRepo.saveAlertDb(alertDb);
+                                     System.exit(0);
+                                 }
+                                 notificationRepo.save(notification);
+                                 smsSentCount++;
+                             }
                          }
 
                          log.info("total sms sent=  " + totalMailsent);
                          log.info("sms failed to send: " + totalMailNotsent);
-                         emailUtil.setIndexZero();
                     } else {
                          log.info("notification data is  empty");
                          log.info(" so no sms is pending to send");
                     }
-                    log.info("exit from sms process");
+                    log.info("retrying for failed sms");
+                   LocalDateTime dateTime = LocalDateTime.now();
+                   LocalDateTime newDateTime = dateTime.withNano(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
+                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(0, type, newDateTime, operatorName);
+                   if (!notificationDataForRetries.isEmpty()) {
+                       log.info("notification for retry data is not empty and size is " + notificationDataForRetries.size());
+                       for (Notification notification : notificationDataForRetries) {
+                           if (smsSentCount >= tpsValue) {
+                               long tsdiff = System.currentTimeMillis() - tsms;
+                               if (tsdiff < 1000) {
+                                   smsSentCount = 0;
+                                   Thread.sleep(1000 - tsdiff);
+                               } else if (tsdiff == 1000) {
+                                   smsSentCount = 0;
+                               } else {
+                                   smsSentCount = 0;
+                                   RunningAlertDb alertDb = new RunningAlertDb("Alert1204", "TPS not achieved", 0);
+                                   alertDbRepo.saveAlertDb(alertDb);
+                               }
+                               tsms = System.currentTimeMillis();
+                           }
+                           log.info("retrying notification data id= " + notification.getId());
+                           if (Objects.nonNull(notification.getMsisdn()) && Objects.nonNull(notification.getOperatorName())) {
+                               String body = notification.getMessage();
+                               SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(notification.getOperatorName());
+                               String correlationId = UUID.randomUUID().toString();
+                               String smsStatus = smsProvider.sendSms(notification.getMsisdn(), from, notification.getMessage(), correlationId, notification.getMsgLang());
+                               if (smsStatus == "SUCCESS") {
+                                   LocalDateTime now = LocalDateTime.now();
+                                   notification.setStatus(1);
+                                   notification.setNotificationSentTime(now);
+                                   notification.setCorelationId(correlationId);
+                               } else if (smsStatus == "FAILED") {
+                                   if (notification.getRetryCount() < smsRetryCountValue) {
+                                       notification.setRetryCount(notification.getRetryCount() + 1);
+                                   } else {
+                                       notification.setStatus(2);
+                                   }
+                               } else if (smsStatus == "SERVICE UNAVAILABLE") {
+                                   RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorName + " is down", 0);
+                                   alertDbRepo.saveAlertDb(alertDb);
+                               }
+                               notificationRepo.save(notification);
+                           }
+                       }
+
+                       log.info("total sms sent=  " + totalMailsent);
+                       log.info("sms failed to send: " + totalMailNotsent);
+                   }
                } catch (Exception e) {
                     log.info("error in sending Sms");
                     log.info(e.toString());
                     log.info(e.toString());
+                    RunningAlertDb alertDb = new RunningAlertDb("Alert1201", "Database connection failed or login failed due to credentials", 0);
+                    alertDbRepo.saveAlertDb(alertDb);
                }
                log.info("exit from  service");
                System.exit(0);

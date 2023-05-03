@@ -1,5 +1,6 @@
 package com.ceir.CEIRPostman.RepositoryService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,9 @@ public class NotificationRepoImpl {
 	NotificationRepository notificationRepository;
 	
 	private final Logger log = Logger.getLogger(getClass());
-	public List<Notification> dataByStatusAndChannelType(int status,String type) {
+	public List<Notification> dataByStatusAndRetryCountAndOperatorNameAndChannelType(int status,int retryCount, String operatorName, String channelType) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatusAndChannelType(status,type);
+			List<Notification> notification=notificationRepository.findByStatusAndRetryCountAndOperatorNameAndChannelType(status,retryCount, operatorName, channelType);
 		    return notification;
 		}
 		catch(Exception e) {
@@ -29,14 +30,25 @@ public class NotificationRepoImpl {
 		}
 	}
 	
-	public List<Notification> dataByStatus(int status) {
+//	public List<Notification> dataByStatus(int status) {
+//		try {
+//			List<Notification> notification=notificationRepository.findByStatus(status);
+//		    return notification;
+//		}
+//		catch(Exception e) {
+//			log.info(e.toString());
+//            return new ArrayList<Notification>();
+//		}
+//	}
+	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(int status, String channelType, LocalDateTime modifiedOn, String operatorName) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatus(status);
-		    return notification;
+			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(status, channelType, modifiedOn, operatorName);
+			return notification;
 		}
 		catch(Exception e) {
 			log.info(e.toString());
-            return new ArrayList<Notification>();
+			return new ArrayList<Notification>();
 		}
 	}
+
 }
