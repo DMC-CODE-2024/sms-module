@@ -48,14 +48,14 @@ public class SystemConfigurationDb implements Serializable {
 	@NotBlank
 	private String description;
 	
-	@Column(nullable = false,columnDefinition = "0")
+	@Column(nullable = false,columnDefinition = "int default 0")
 	private Integer type; // have two values USER/SYSTEM.
 	@Transient
 	private String typeInterp;
 	
 	private String remark;
 	
-	@Column(nullable = false,columnDefinition = "0")
+	@Column(nullable = false,columnDefinition = "int default 0")
 	private Integer active;
 	
 	private String featureName;

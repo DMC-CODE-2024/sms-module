@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-import com.ceir.CEIRPostman.service.EmailService;
 import com.ceir.CEIRPostman.service.SmsService;
 
 @EnableAsync
@@ -14,13 +13,13 @@ import com.ceir.CEIRPostman.service.SmsService;
 @EnableAutoConfiguration
 @ComponentScan(basePackages ="com.ceir.CEIRPostman")
 @EnableEncryptableProperties
-public class App 
+public class App
 {
 	public static void main( String[] args )
 	{
 		ConfigurableApplicationContext ctx =SpringApplication.run(App.class, args);
-		String operatorName = args.length > 0 ? args[0] : null;
-		SmsService fetch=ctx.getBean(SmsService.class,operatorName);
+//		String operatorName = args.length > 0 ? args[0] : null;
+		SmsService fetch=ctx.getBean(SmsService.class);
 		new Thread(fetch).start();
 	}
 }

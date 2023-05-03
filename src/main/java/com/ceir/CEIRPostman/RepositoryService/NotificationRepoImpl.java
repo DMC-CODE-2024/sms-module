@@ -42,7 +42,7 @@ public class NotificationRepoImpl {
 //	}
 	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(int status, String channelType, LocalDateTime modifiedOn, String operatorName) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(status, channelType, modifiedOn, operatorName);
+			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqual(status, channelType, operatorName, modifiedOn);
 			return notification;
 		}
 		catch(Exception e) {

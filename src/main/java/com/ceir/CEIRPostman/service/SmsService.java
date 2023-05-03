@@ -12,68 +12,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ceir.CEIRPostman.Repository.NotificationRepository;
-import com.ceir.CEIRPostman.RepositoryService.EndUserRepoService;
-import com.ceir.CEIRPostman.RepositoryService.MessageRepoSevice;
 import com.ceir.CEIRPostman.RepositoryService.NotificationRepoImpl;
 import com.ceir.CEIRPostman.RepositoryService.RunningAlertRepoService;
 import com.ceir.CEIRPostman.RepositoryService.SystemConfigurationDbRepoImpl;
-import com.ceir.CEIRPostman.RepositoryService.UserRepoService;
-import com.ceir.CEIRPostman.RepositoryService.UserTempRepoService;
-import com.ceir.CEIRPostman.configuration.AppConfig;
-import com.ceir.CEIRPostman.model.EndUserDB;
 import com.ceir.CEIRPostman.model.Notification;
 import com.ceir.CEIRPostman.model.RunningAlertDb;
 import com.ceir.CEIRPostman.model.SystemConfigurationDb;
-import com.ceir.CEIRPostman.model.User;
-import com.ceir.CEIRPostman.model.UserTemporarydetails;
-import com.ceir.CEIRPostman.util.SmsUtil;
 
 @Service
 public class SmsService implements Runnable {
-
-     @Autowired
-     SmsUtil emailUtil;
-
-     @Autowired
-     NotificationRepository notificationRepo;
-
-     @Autowired
-     AppConfig appConfig;
-
-     @Autowired
-     NotificationRepoImpl notificationRepoImpl;
-
-     @Autowired
-     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
-
-     @Autowired
-     EndUserRepoService endUserRepoService;
-
-     @Autowired
-     UserRepoService userRepoService;
-
-     @Autowired
-     UserTempRepoService userTempRepoService;
-
-     @Autowired
-     RunningAlertRepoService alertDbRepo;
-
-     @Autowired
-     MessageRepoSevice messageRepo;
-
-     @Autowired
-     AuthorityRepoService authorityRepo;
-
-     @Autowired
-     SmsSendFactory smsSendFactory;
-
      private final Logger log = Logger.getLogger(getClass());
+     @Value("${operatorName}")
+     private String operatorNameArg;
+     @Autowired
+     private NotificationRepository notificationRepo;
+     @Autowired
+     private NotificationRepoImpl notificationRepoImpl;
+     @Autowired
+     private SystemConfigurationDbRepoImpl systemConfigRepoImpl;
+     @Autowired
+     private RunningAlertRepoService alertDbRepo;
+     @Autowired
+     private SmsSendFactory smsSendFactory;
 
-    private final String operatorNameArg;
-
-    public SmsService(String operatorName) {
-        this.operatorNameArg = operatorName;
-    }
      public void run() {
           String type = "SMS";
           String operatorName = null;
