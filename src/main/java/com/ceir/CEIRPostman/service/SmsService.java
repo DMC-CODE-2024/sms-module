@@ -19,11 +19,14 @@ import com.ceir.CEIRPostman.model.Notification;
 import com.ceir.CEIRPostman.model.RunningAlertDb;
 import com.ceir.CEIRPostman.model.SystemConfigurationDb;
 
-@Service
+//@Service
 public class SmsService implements Runnable {
      private final Logger log = Logger.getLogger(getClass());
-     @Value("${operatorName}")
-     private String operatorNameArg;
+    private final String operatorName;
+
+    public SmsService(String operatorName) {
+        this.operatorName = operatorName;
+    }
      @Autowired
      private NotificationRepository notificationRepo;
      @Autowired
@@ -37,9 +40,10 @@ public class SmsService implements Runnable {
 
      public void run() {
           String type = "SMS";
-          String operatorName = null;
+          String operatorNameArg = null;
           try{
-              operatorName = OperatorTypes.valueOf(operatorNameArg.toUpperCase()).getValue();
+              operatorNameArg = OperatorTypes.valueOf(operatorName.toUpperCase()).getValue();
+              System.out.println("operator name: "+ operatorNameArg);
           } catch (IllegalArgumentException e) {
               RunningAlertDb alertDb = new RunningAlertDb("Alert1205", "Operator " + operatorNameArg + " does not exist", 0);
               alertDbRepo.saveAlertDb(alertDb);
@@ -80,8 +84,8 @@ public class SmsService implements Runnable {
                log.info("inside Sms process");
                try {
                     log.info("inside Sms process");
-                    log.info("going to fetch data from notification table for operator="+operatorName+", status=0, retryCount=0 and channel type="+type);
-                    List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorName, type);
+                    log.info("going to fetch data from notification table for operator="+operatorNameArg+", status=0, retryCount=0 and channel type="+type);
+                    List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorNameArg, type);
                     int totalMailsent = 0;
                     int totalMailNotsent = 0;
                     int smsSentCount = 0;
@@ -121,13 +125,13 @@ public class SmsService implements Runnable {
                                      } else {
                                          notification.setStatus(2);
                                      }
-                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1206", "Send SMS failed for " + operatorName, 0);
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1206", "Send SMS failed for " + operatorNameArg, 0);
                                      alertDbRepo.saveAlertDb(alertDb);
                                  } else if (smsStatus == "SERVICE_UNAVAILABLE") {
-                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorName + " is down", 0);
+                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorNameArg + " is down", 0);
                                      alertDbRepo.saveAlertDb(alertDb);
                                  } else {
-                                     log.info("error in sending Sms for "+operatorName);
+                                     log.info("error in sending Sms for "+operatorNameArg);
                                      //some alert
                                      RunningAlertDb alertDb = new RunningAlertDb("Alert1201", "Database connection failed or login failed due to credentials", 0);
                                      alertDbRepo.saveAlertDb(alertDb);
@@ -147,7 +151,7 @@ public class SmsService implements Runnable {
                     log.info("retrying for failed sms");
                    LocalDateTime dateTime = LocalDateTime.now();
                    LocalDateTime newDateTime = dateTime.withNano(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
-                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(0, type, newDateTime, operatorName);
+                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(0, type, newDateTime, operatorNameArg);
                    if (!notificationDataForRetries.isEmpty()) {
                        log.info("notification for retry data is not empty and size is " + notificationDataForRetries.size());
                        for (Notification notification : notificationDataForRetries) {
@@ -183,7 +187,7 @@ public class SmsService implements Runnable {
                                        notification.setStatus(2);
                                    }
                                } else if (smsStatus == "SERVICE UNAVAILABLE") {
-                                   RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorName + " is down", 0);
+                                   RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorNameArg + " is down", 0);
                                    alertDbRepo.saveAlertDb(alertDb);
                                }
                                notificationRepo.save(notification);
