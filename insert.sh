@@ -2,7 +2,7 @@
 
 csv_file="input.csv"
 database="your_database_name"
-table="notification"
+table="system_configuration_db"
 host="your_cloud_host"
 port="your_cloud_port"
 username="your_database_username"
