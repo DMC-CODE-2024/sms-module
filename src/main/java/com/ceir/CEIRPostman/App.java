@@ -20,9 +20,8 @@ public class App
 	private static String[] args;
 	public static void main(String[] args) {
 		App.args = args;
-		String operatorName = args.length > 0 ? args[0] : null;
 		ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
-		SmsService fetch = ctx.getBean(SmsService.class, operatorName);
+		SmsService fetch = ctx.getBean(SmsService.class);
 		new Thread(fetch).start();
 	}
 

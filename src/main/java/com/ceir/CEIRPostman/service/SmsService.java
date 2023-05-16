@@ -109,7 +109,6 @@ public class SmsService implements Runnable {
                              }
                              log.info("notification data id= " + notification.getId());
                              if (Objects.nonNull(notification.getMsisdn()) && Objects.nonNull(notification.getOperatorName())) {
-                                 String body = notification.getMessage();
                                  SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(notification.getOperatorName());
                                  String correlationId = UUID.randomUUID().toString();
                                  String smsStatus = smsProvider.sendSms(notification.getMsisdn(), from, notification.getMessage(), correlationId, notification.getMsgLang());
@@ -171,7 +170,6 @@ public class SmsService implements Runnable {
                            }
                            log.info("retrying notification data id= " + notification.getId());
                            if (Objects.nonNull(notification.getMsisdn()) && Objects.nonNull(notification.getOperatorName())) {
-                               String body = notification.getMessage();
                                SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(notification.getOperatorName());
                                String correlationId = UUID.randomUUID().toString();
                                String smsStatus = smsProvider.sendSms(notification.getMsisdn(), from, notification.getMessage(), correlationId, notification.getMsgLang());

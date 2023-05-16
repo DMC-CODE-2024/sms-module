@@ -1,0 +1,33 @@
+Parameter Name,Description,Value
+smart_sms_tps,Smart Operator TPS Supported,10
+cellcard_sms_tps,CellCard Operator TPS Supported,15
+metfone_sms_tps,Metfone Operator TPS Supported,12
+viettel_sms_tps,Viettel Operator TPS Supported,10
+default_sms_tps,Default Operator TPS Supported. It can be an aggregator or operator itself,10
+smart_sms_url,Smart SMS Notification sent url,https://mife.smart.com.kh:8243/smsmessaging/v1/outbound/tel/%s/requests
+cellcard_sms_url,Smart SMS Notification sent url http url,N/A
+metfone_sms_url,Smart SMS Notification sent url http url,N/A
+viettel_sms_url,Smart SMS Notification sent url http url,N/A
+default_sms_url,Smart SMS Notification sent url http url,N/A
+sms_retry_interval,SMS retry time difference,15000 (in ms),15000
+sms_retry_count,Number of attempts to send SMS,3
+smart_username,Smart authentication credentials Username,N/A
+smart_password,Smart authentication credentials Password,N/A
+cellcard_username,Cellcard authentication credentials Username,N/A
+cellcard_password,Cellcard authentication credentials Password,N/A
+metfone_username,Metfone authentication credentials Username,N/A
+metfone_password,Metfone authentication credentials Password,N/A
+seatel_username,Seatel authentication credentials Username,N/A
+seatel_password,Seatel authentication credentials Password,N/A
+smart_sender_id,SMS Sender ID for smart,EIRS
+cellcard_sender_id,SMS Sender ID for Cellcard,EIRS
+metfone_sender_id,SMS Sender ID for Metfone,EIRS
+seatel_sender_id,SMS Sender ID for deatel,EIRS
+default_sender_id,SMS Sender ID for Deafult,EIRS
+default_agg_type,Type of aggregator,Operator or Aggregator
+default_operator_name,Default operator to be used if above flag value is Operator,Smart
+smart_token,Token received from smart on authorization,acsaksdnckscksck
+smart_token_timeout_in_sec,Token expiry duration in seconds,3600
+smart_token_url,Smart token url to get Auth token url,N/A
+smart_consumer_key,Smart consumer key used for Auth Token,e3A07qYUfzv64934dqMHhMGZ5yIa
+smart_client_secret,Smart client secret to be passed in token url,oZ0DWsPp2nBh5Sv159Y9f15fEeoa
