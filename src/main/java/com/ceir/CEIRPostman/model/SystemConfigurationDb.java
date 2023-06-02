@@ -24,149 +24,161 @@ public class SystemConfigurationDb implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
- 
-	@Column(nullable = false)
+	private Integer id;
+
+	@Column(name = "created_on")
 	@CreationTimestamp
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private Date createdOn;
 
-	@Column(nullable = false)
+	@Column(name = "modified_on")
 	@UpdateTimestamp
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private Date modifiedOn;
-	
+
 	@NotNull
 	@NotBlank
 	private String tag;
-	
+
 	@NotNull
 	@NotBlank
 	private String value;
-	
+
 	@NotNull
 	@NotBlank
 	private String description;
-	
-	@Column(nullable = false,columnDefinition = "int default 0")
-	private Integer type; // have two values USER/SYSTEM.
+
+	private Integer type;
+
 	@Transient
 	private String typeInterp;
-	
+
 	private String remark;
-	
-	@Column(nullable = false,columnDefinition = "int default 0")
+
 	private Integer active;
-	
+
+	@Column(name = "feature_name")
 	private String featureName;
+
+	@Column(name = "user_type")
 	private String userType;
-	
-	
-	public Integer getActive() {
-		return active;
+
+	public SystemConfigurationDb() {
+		super();
 	}
-	public void setActive(Integer active) {
-		this.active = active;
-	}
-	public String getFeatureName() {
-		return featureName;
-	}
-	public void setFeatureName(String featureName) {
-		this.featureName = featureName;
-	}
-	
-	public String getUserType() {
-		return userType;
-	}
-	public void setUserType(String userType) {
-		this.userType = userType;
-	}
-	public Long getId() {
+
+	public Integer getId() {
 		return id;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
+
 	public Date getModifiedOn() {
 		return modifiedOn;
 	}
-	public void setModifiedOn(Date modifiedOn) {
-		this.modifiedOn = modifiedOn;
-	}
+
 	public String getTag() {
 		return tag;
 	}
-	public void setTag(String tag) {
-		this.tag = tag;
-	}
+
 	public String getValue() {
 		return value;
 	}
-	public void setValue(String value) {
-		this.value = value;
-	}
+
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
+
 	public Integer getType() {
 		return type;
 	}
-	public void setType(Integer type) {
-		this.type = type;
-	}
-	public String getRemark() {
-		return remark;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+
 	public String getTypeInterp() {
 		return typeInterp;
 	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public Integer getActive() {
+		return active;
+	}
+
+	public String getFeatureName() {
+		return featureName;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public void setModifiedOn(Date modifiedOn) {
+		this.modifiedOn = modifiedOn;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
 	public void setTypeInterp(String typeInterp) {
 		this.typeInterp = typeInterp;
 	}
-	
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public void setActive(Integer active) {
+		this.active = active;
+	}
+
+	public void setFeatureName(String featureName) {
+		this.featureName = featureName;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("SystemConfigurationDb [id=");
-		builder.append(id);
-		builder.append(", createdOn=");
-		builder.append(createdOn);
-		builder.append(", modifiedOn=");
-		builder.append(modifiedOn);
-		builder.append(", tag=");
-		builder.append(tag);
-		builder.append(", value=");
-		builder.append(value);
-		builder.append(", description=");
-		builder.append(description);
-		builder.append(", type=");
-		builder.append(type);
-		builder.append(", typeInterp=");
-		builder.append(typeInterp);
-		builder.append(", remark=");
-		builder.append(remark);
-		builder.append(", active=");
-		builder.append(active);
-		builder.append(", featureName=");
-		builder.append(featureName);
-		builder.append(", userType=");
-		builder.append(userType);
-		builder.append("]");
-		return builder.toString();
+		final StringBuilder sb = new StringBuilder("SystemConfigurationDb{");
+		sb.append("id=").append(id);
+		sb.append(", createdOn=").append(createdOn);
+		sb.append(", modifiedOn=").append(modifiedOn);
+		sb.append(", tag='").append(tag).append('\'');
+		sb.append(", value='").append(value).append('\'');
+		sb.append(", description='").append(description).append('\'');
+		sb.append(", type=").append(type);
+		sb.append(", typeInterp='").append(typeInterp).append('\'');
+		sb.append(", remark='").append(remark).append('\'');
+		sb.append(", active=").append(active);
+		sb.append(", featureName='").append(featureName).append('\'');
+		sb.append(", userType='").append(userType).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
 }

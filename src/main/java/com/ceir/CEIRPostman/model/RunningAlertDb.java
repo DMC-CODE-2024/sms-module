@@ -2,6 +2,7 @@ package com.ceir.CEIRPostman.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,35 +20,31 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class RunningAlertDb implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
+	private Integer id;
+
+	@Column(name = "created_on")
 	@CreationTimestamp
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
-	private LocalDateTime createdOn;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private Date createdOn;
 
+	@Column(name = "modified_on")
 	@UpdateTimestamp
-	private LocalDateTime modifiedOn;
+	private Date modifiedOn;
 
+	@Column(name = "user_id")
 	private Integer userId;
-	
-	@Column(length = 20)
+
+	@Column(name = "alert_id", length = 20)
 	private String alertId;
+
 	private String description;
+
 	private Integer status;
+
 	private String username;
 
-	
-	
-	public RunningAlertDb() {
-		super();
-	}
-	
-	
 	public RunningAlertDb(String alertId, String description, Integer status) {
 		super();
 		this.alertId = alertId;
@@ -55,89 +52,82 @@ public class RunningAlertDb implements Serializable {
 		this.status = status;
 	}
 
-
-	public RunningAlertDb(Integer userId, String alertId, String description, Integer status, String username) {
-		super();
-		this.userId = userId;
-		this.alertId = alertId;
-		this.description = description;
-		this.status = status;
-		this.username = username;
-	}
-
-
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(Long id) {
+
+	public void setId(Integer id) {
 		this.id = id;
 	}
-	public LocalDateTime getCreatedOn() {
+
+	public Date getCreatedOn() {
 		return createdOn;
 	}
-	public void setCreatedOn(LocalDateTime createdOn) {
+
+	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
-	public LocalDateTime getModifiedOn() {
+
+	public Date getModifiedOn() {
 		return modifiedOn;
 	}
-	public void setModifiedOn(LocalDateTime modifiedOn) {
+
+	public void setModifiedOn(Date modifiedOn) {
 		this.modifiedOn = modifiedOn;
 	}
+
 	public Integer getUserId() {
 		return userId;
 	}
+
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
+
 	public String getAlertId() {
 		return alertId;
 	}
+
 	public void setAlertId(String alertId) {
 		this.alertId = alertId;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public Integer getStatus() {
 		return status;
 	}
+
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("RunningAlertDb [id=");
-		builder.append(id);
-		builder.append(", createdOn=");
-		builder.append(createdOn);
-		builder.append(", modifiedOn=");
-		builder.append(modifiedOn);
-		builder.append(", userId=");
-		builder.append(userId);
-		builder.append(", alertId=");
-		builder.append(alertId);
-		builder.append(", description=");
-		builder.append(description);
-		builder.append(", status=");
-		builder.append(status);
-		builder.append(", username=");
-		builder.append(username);
-		builder.append("]");
-		return builder.toString();
+		final StringBuilder sb = new StringBuilder("RunningAlertDb{");
+		sb.append("id=").append(id);
+		sb.append(", createdOn=").append(createdOn);
+		sb.append(", modifiedOn=").append(modifiedOn);
+		sb.append(", userId=").append(userId);
+		sb.append(", alertId='").append(alertId).append('\'');
+		sb.append(", description='").append(description).append('\'');
+		sb.append(", status=").append(status);
+		sb.append(", username='").append(username).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
-	
 }

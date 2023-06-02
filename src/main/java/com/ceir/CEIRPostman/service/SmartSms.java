@@ -152,7 +152,7 @@ public class SmartSms implements SmsManagementService{
         int retryCount = 0;
         boolean retry = true;
         CloseableHttpResponse httpResponse = null;
-        CloseableHttpClient httpClient = HttpClients.createDefault();;
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = null;
         while (retry) {
             httpPost = getHttpPostEntity(url, accessToken, to, senderAddress, message,clientCorrelator, notifyURL, callbackData, senderName);
