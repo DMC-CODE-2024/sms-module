@@ -60,14 +60,10 @@ public class SmsService implements Runnable {
           try {
               if (type == null) {
                   tps = systemConfigRepoImpl.getDataByTag("default_sms_tps");
-                  smsUrl = systemConfigRepoImpl.getDataByTag("default_sms_url");
                   fromSender = systemConfigRepoImpl.getDataByTag("default_sender_id");
               } else {
                   tps = systemConfigRepoImpl.getDataByTag(type+"_sms_tps");
-                  smsUrl = systemConfigRepoImpl.getDataByTag(type+"_sms_tps");
                   fromSender = systemConfigRepoImpl.getDataByTag(type+"_sender_id");
-//              SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag(type+"_username");
-//              SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag(type+"_password");
               }
                smsRetryCountValue = Integer.parseInt(smsRetryCount.getValue());
                sleepTimeinMilliSec = Integer.parseInt(sleepTps.getValue());
@@ -86,6 +82,7 @@ public class SmsService implements Runnable {
                     log.info("inside Sms process");
                     log.info("going to fetch data from notification table for operator="+operatorNameArg+", status=0, retryCount=0 and channel type="+type);
                     List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorNameArg, type);
+                   LocalDateTime dateTime = LocalDateTime.now();
                     int totalMailsent = 0;
                     int totalMailNotsent = 0;
                     int smsSentCount = 0;
@@ -147,8 +144,7 @@ public class SmsService implements Runnable {
                          log.info("notification data is  empty");
                          log.info(" so no sms is pending to send");
                     }
-                    log.info("retrying for failed sms");
-                   LocalDateTime dateTime = LocalDateTime.now();
+                   log.info("retrying for failed sms");
                    LocalDateTime newDateTime = dateTime.withNano(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
                    List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(0, type, newDateTime, operatorNameArg);
                    if (!notificationDataForRetries.isEmpty()) {

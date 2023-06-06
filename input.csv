@@ -31,3 +31,7 @@ smart_token_timeout_in_sec,Token expiry duration in seconds,3600
 smart_token_url,Smart token url to get Auth token url,N/A
 smart_consumer_key,Smart consumer key used for Auth Token,e3A07qYUfzv64934dqMHhMGZ5yIa
 smart_client_secret,Smart client secret to be passed in token url,oZ0DWsPp2nBh5Sv159Y9f15fEeoa
+agg_url,dummy,dummy
+agg_username,dummy,dummy
+agg_password,dummy,dummy
+
