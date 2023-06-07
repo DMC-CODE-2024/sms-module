@@ -54,7 +54,7 @@ public class SmartSms implements SmsManagementService{
             String lastUpdatedDate = formatter.format(lastUpdated);
             String currentDate = getCurrentDateTime();
             boolean isDateDifferenceLessThan1Hour = isDateDifferenceLessThan1Hour(currentDate, lastUpdatedDate, Integer.parseInt(tokenTimeoutInSec.getValue()));
-            if(isDateDifferenceLessThan1Hour) {
+            if(savedToken.getValue() != "NA" && isDateDifferenceLessThan1Hour) {
                 token = savedToken.getValue();
 
             } else {
@@ -143,10 +143,9 @@ public class SmartSms implements SmsManagementService{
     public JSONObject sendRequest(String to, String senderAddress, String message, String clientCorrelator, String notifyURL,
                                   String callbackData, String senderName, String accessToken) throws IOException {
         SystemConfigurationDb smartSmsUrl = systemConfigRepoImpl.getDataByTag("smart_sms_url");
-//        String baseUrl = "https://mife.smart.com.kh:8243/smsmessaging/v1/outbound/tel/%s/requests";
-        String urlEncodedSenderAddress = URLEncoder.encode("tel:"+senderAddress, StandardCharsets.UTF_8);
-
-        String url = String.format(smartSmsUrl.getValue(), urlEncodedSenderAddress);
+//        String baseUrl = "https://mife.smart.com.kh:8243/smsmessaging/v1/outbound/tel/tel%3A%2B310/requests";
+        // String urlEncodedSenderAddress = URLEncoder.encode("tel:+310", StandardCharsets.UTF_8);
+        String url = smartSmsUrl.getValue();
 
         int maxRetries = 2;
         int retryCount = 0;
@@ -218,7 +217,7 @@ public class SmartSms implements SmsManagementService{
         JSONArray address = new JSONArray();
         address.put("tel:" + to);
         outboundSMSMessageRequest.put("address", address);
-        outboundSMSMessageRequest.put("senderAddress", "tel:" + senderAddress);
+        outboundSMSMessageRequest.put("senderAddress", "tel:+310");
         JSONObject outboundSMSTextMessage = new JSONObject();
         outboundSMSTextMessage.put("message", message);
         outboundSMSMessageRequest.put("outboundSMSTextMessage", outboundSMSTextMessage);
