@@ -22,6 +22,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	public List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelType(int status, int retryCount, String operatorName, String channelType);
 
+	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType " +
+			"AND n.operatorName = :operatorName AND n.modifiedOn > :modifiedOn AND n.retryCount >= :retryCount")
+	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(
+			int status, String channelType, String operatorName, LocalDateTime modifiedOn, int retryCount);
+
 	@Modifying
 	@Query("UPDATE Notification n SET n.retryCount = :retryCount WHERE n.id = :id")
 	void updateRetryCountById(Long id, Integer retryCount);

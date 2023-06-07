@@ -49,7 +49,6 @@ public class SmsService implements Runnable {
               alertDbRepo.saveAlertDb(alertDb);
           }
           SystemConfigurationDb tps;
-          SystemConfigurationDb smsUrl;
           SystemConfigurationDb smsRetryCount = systemConfigRepoImpl.getDataByTag("sms_retry_count");
           SystemConfigurationDb fromSender;
           SystemConfigurationDb sleepTps = systemConfigRepoImpl.getDataByTag("sms_retry_interval");
@@ -58,12 +57,12 @@ public class SmsService implements Runnable {
           Integer tpsValue = 0;
           String from = null;
           try {
-              if (type == null) {
+              if (operatorNameArg == null) {
                   tps = systemConfigRepoImpl.getDataByTag("default_sms_tps");
                   fromSender = systemConfigRepoImpl.getDataByTag("default_sender_id");
               } else {
-                  tps = systemConfigRepoImpl.getDataByTag(type+"_sms_tps");
-                  fromSender = systemConfigRepoImpl.getDataByTag(type+"_sender_id");
+                  tps = systemConfigRepoImpl.getDataByTag(operatorNameArg+"_sms_tps");
+                  fromSender = systemConfigRepoImpl.getDataByTag(operatorNameArg+"_sender_id");
               }
                smsRetryCountValue = Integer.parseInt(smsRetryCount.getValue());
                sleepTimeinMilliSec = Integer.parseInt(sleepTps.getValue());
@@ -82,7 +81,7 @@ public class SmsService implements Runnable {
                     log.info("inside Sms process");
                     log.info("going to fetch data from notification table for operator="+operatorNameArg+", status=0, retryCount=0 and channel type="+type);
                     List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorNameArg, type);
-                   LocalDateTime dateTime = LocalDateTime.now();
+                    LocalDateTime dateTime = LocalDateTime.now();
                     int totalMailsent = 0;
                     int totalMailNotsent = 0;
                     int smsSentCount = 0;
@@ -145,8 +144,8 @@ public class SmsService implements Runnable {
                          log.info(" so no sms is pending to send");
                     }
                    log.info("retrying for failed sms");
-                   LocalDateTime newDateTime = dateTime.withNano(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
-                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(0, type, newDateTime, operatorNameArg);
+//                   LocalDateTime newDateTime = dateTime.plusNanos(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
+                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThanEqualTo(0, type, operatorNameArg,  dateTime, 1);
                    if (!notificationDataForRetries.isEmpty()) {
                        log.info("notification for retry data is not empty and size is " + notificationDataForRetries.size());
                        for (Notification notification : notificationDataForRetries) {
@@ -192,6 +191,7 @@ public class SmsService implements Runnable {
                        log.info("sms failed to send: " + totalMailNotsent);
                    }
                } catch (Exception e) {
+                   e.printStackTrace();
                     log.info("error in sending Sms");
                     log.info(e.toString());
                     log.info(e.toString());

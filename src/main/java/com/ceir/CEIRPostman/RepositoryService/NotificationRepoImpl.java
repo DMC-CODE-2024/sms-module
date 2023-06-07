@@ -40,9 +40,9 @@ public class NotificationRepoImpl {
 //            return new ArrayList<Notification>();
 //		}
 //	}
-	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqualTo(int status, String channelType, LocalDateTime modifiedOn, String operatorName) {
+	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThanEqualTo(int status, String type, String operatorName, LocalDateTime modifiedOn, int retryCount) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqual(status, channelType, operatorName, modifiedOn);
+			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(status, type, operatorName, modifiedOn, retryCount);
 			return notification;
 		}
 		catch(Exception e) {

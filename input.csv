@@ -9,7 +9,7 @@ cellcard_sms_url,Smart SMS Notification sent url http url,N/A
 metfone_sms_url,Smart SMS Notification sent url http url,N/A
 viettel_sms_url,Smart SMS Notification sent url http url,N/A
 default_sms_url,Smart SMS Notification sent url http url,N/A
-sms_retry_interval,SMS retry time difference,15000 (in ms),15000
+sms_retry_interval,SMS retry time difference 15000 (in ms),15000
 sms_retry_count,Number of attempts to send SMS,3
 smart_username,Smart authentication credentials Username,N/A
 smart_password,Smart authentication credentials Password,N/A

@@ -5,13 +5,16 @@ import com.ceir.CEIRPostman.model.SystemConfigurationDb;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -30,8 +33,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -92,23 +97,26 @@ public class SmartSms implements SmsManagementService{
 
         // Set request headers
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.getMimeType());
-        String authHeader = Base64.getEncoder().encodeToString((clientId.getValue() + ":" + clientSecret.getValue()).getBytes(StandardCharsets.UTF_8));
+        String authHeader = "ZTNBMDdxWVVmenY2NDkzNGRxTUhlTVpnNXlJYTpvWjBEV3NQcDJuYkg1U3YxNTlZOWYxNWZFZW9h";
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authHeader);
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
         // Set request body
-        String requestBody = "grant_type=client_credentials";
-        httpPost.setEntity(new StringEntity(requestBody, StandardCharsets.UTF_8));
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("grant_type", "client_credentials"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, StandardCharsets.UTF_8);
+        httpPost.setEntity(entity);
 
         // Execute request
         HttpResponse httpResponse = httpClient.execute(httpPost);
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
         HttpEntity httpEntity = httpResponse.getEntity();
         String responseBody = EntityUtils.toString(httpEntity);
 
         // Extract token from response
         JSONObject jsonObject = new JSONObject(responseBody);
         String accessToken = jsonObject.getString("access_token");
-        String expiresIn = jsonObject.getString("expires_in");
+        String expiresIn = jsonObject.getNumber("expires_in").toString();
 
         // Cleanup
         EntityUtils.consume(httpEntity);
@@ -215,7 +223,7 @@ public class SmartSms implements SmsManagementService{
         JSONObject requestBody = new JSONObject();
         JSONObject outboundSMSMessageRequest = new JSONObject();
         JSONArray address = new JSONArray();
-        address.put("tel:" + to);
+        address.put("tel:+" + to);
         outboundSMSMessageRequest.put("address", address);
         outboundSMSMessageRequest.put("senderAddress", "tel:+310");
         JSONObject outboundSMSTextMessage = new JSONObject();
