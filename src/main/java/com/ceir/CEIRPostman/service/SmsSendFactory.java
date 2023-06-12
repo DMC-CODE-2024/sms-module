@@ -29,7 +29,7 @@ public class SmsSendFactory {
                 return smart;
             case "metfone":
                 return metfone;
-            case "seatle":
+            case "seatel":
                 return seatle;
             case "cellcard":
                 return cellCard;

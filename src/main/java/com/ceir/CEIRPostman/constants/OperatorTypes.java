@@ -4,7 +4,7 @@ public enum OperatorTypes {
     SMART("smart"),
     METFONE("metfone"),
     CELLCARD("cellcard"),
-    SEATLE("seatle"),
+    SEATEL("seatel"),
     DEFAULT("default");
 
     private final String value;

@@ -23,7 +23,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.rmi.ServerException;
+import java.util.Arrays;
 
 @Component
 public class MetfoneSms implements SmsManagementService{
@@ -35,7 +37,7 @@ public class MetfoneSms implements SmsManagementService{
     public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
         try{
             log.info("Sending sms via Metfone: "+to+","+from+","+message+","+","+correlationId);
-            String resp = sendRequest(message,to, from, correlationId);
+            String resp = sendRequest(message,to, from, correlationId, msgLang);
             log.info("Response from Metfone "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {
@@ -50,7 +52,7 @@ public class MetfoneSms implements SmsManagementService{
         }
     }
 
-    public String sendRequest(String message, String msisdn, String senderId, String reqID) throws IOException, SAXException, ParserConfigurationException {
+    public String sendRequest(String message, String msisdn, String senderId, String reqID, String msgLang) throws IOException, SAXException, ParserConfigurationException {
 
         SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag("metfone_sms_url");
         SystemConfigurationDb accessKey = systemConfigRepoImpl.getDataByTag("metfone_access_key");
@@ -62,6 +64,11 @@ public class MetfoneSms implements SmsManagementService{
 
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url.getValue());
+        Boolean unicode = msgLang == "kh" ? true : false;
+        if(unicode) {
+            byte[] byteArray = message.getBytes(StandardCharsets.UTF_16BE);
+            message = Arrays.toString(byteArray);
+        }
 
         // set the SOAP envelope and body
         String requestBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.bccsgw.viettel.com/\"><soapenv:Header/><soapenv:Body><web:gwOperation><Input><username>"
@@ -78,7 +85,10 @@ public class MetfoneSms implements SmsManagementService{
                 + senderId
                 + "\"/><param name=\"reqID\" value=\""
                 + reqID
+                +"\"/><param name=\"unicode\" value=\""
+                + unicode
                 + "\"/></Input></web:gwOperation></soapenv:Body></soapenv:Envelope>";
+        System.out.println("BODY: "+requestBody);
 
         StringEntity requestEntity = new StringEntity(requestBody, "UTF-8");
         post.setEntity(requestEntity);

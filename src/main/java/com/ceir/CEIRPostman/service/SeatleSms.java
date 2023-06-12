@@ -19,16 +19,16 @@ public class SeatleSms implements SmsManagementService{
     public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
         try {
             log.info("Sending sms via Seatle: "+to+","+from+","+message+","+","+correlationId);
-            SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag("seatle_sms_url");
-            SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("seatle_username");
-            SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("seatle_password");
-            SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("seatle_callback_url");
+            SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag("seatel_sms_url");
+            SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("seatel_username");
+            SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("seatel_password");
+            SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("seatel_callback_url");
             String dlrMask = "7";
             String coding = "0";
             if(msgLang == "kh") {
                 coding = "2";
             }
-            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.SEATLE.getValue());
+            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.SEATEL.getValue());
             log.info("Response from Seatle "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {

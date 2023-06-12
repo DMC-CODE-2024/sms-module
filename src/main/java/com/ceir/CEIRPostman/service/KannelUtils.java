@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -33,29 +34,28 @@ public class KannelUtils {
                     .build();
 
             HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPost httpPost = new HttpPost(url);
 
-            // Add the form parameters to the request
-            List<NameValuePair> formParams = new ArrayList<>();
-            formParams.add(new BasicNameValuePair("username", username));
-            formParams.add(new BasicNameValuePair("password", password));
-            formParams.add(new BasicNameValuePair("to", to));
-            formParams.add(new BasicNameValuePair("text", message));
-            formParams.add(new BasicNameValuePair("coding", coding));
-            formParams.add(new BasicNameValuePair("charset", "UTF-8"));
-            formParams.add(new BasicNameValuePair("dlr-mask", dlrMask));
-            formParams.add(new BasicNameValuePair("dlr-url", uri.toString()));
-            formParams.add(new BasicNameValuePair("from", from));
+            // Construct the URL with query parameters
+            URIBuilder uriBuilder = new URIBuilder(url);
+            uriBuilder.setParameter("username", username);
+            uriBuilder.setParameter("password", password);
+            uriBuilder.setParameter("to", to);
+            uriBuilder.setParameter("text", message);
+            uriBuilder.setParameter("coding", coding);
+            uriBuilder.setParameter("charset", "UTF-8");
+            uriBuilder.setParameter("dlr-mask", dlrMask);
+            uriBuilder.setParameter("dlr-url", uri.toString());
+            uriBuilder.setParameter("from", from);
 
-            httpPost.setEntity(new UrlEncodedFormEntity(formParams));
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
 
-            HttpResponse httpResponse = httpClient.execute(httpPost);
+            HttpResponse httpResponse = httpClient.execute(httpGet);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             HttpEntity entity = httpResponse.getEntity();
 
             // Get the response body as a string
             String responseBody = EntityUtils.toString(entity);
-
+            System.out.println(responseBody);
             if (statusCode >= 400 && statusCode <= 499) {
                 throw new ClientProtocolException("HTTP " + statusCode + ": " + httpResponse.getStatusLine().getReasonPhrase());
             } else if (statusCode >= 500 && statusCode <= 599) {

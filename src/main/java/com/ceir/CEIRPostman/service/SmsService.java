@@ -81,7 +81,6 @@ public class SmsService implements Runnable {
                     log.info("inside Sms process");
                     log.info("going to fetch data from notification table for operator="+operatorNameArg+", status=0, retryCount=0 and channel type="+type);
                     List<Notification> notificationData = notificationRepoImpl.dataByStatusAndRetryCountAndOperatorNameAndChannelType(0, 0, operatorNameArg, type);
-                    LocalDateTime dateTime = LocalDateTime.now();
                     int totalMailsent = 0;
                     int totalMailNotsent = 0;
                     int smsSentCount = 0;
@@ -144,8 +143,9 @@ public class SmsService implements Runnable {
                          log.info(" so no sms is pending to send");
                     }
                    log.info("retrying for failed sms");
-//                   LocalDateTime newDateTime = dateTime.plusNanos(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
-                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThanEqualTo(0, type, operatorNameArg,  dateTime, 1);
+                   LocalDateTime dateTime = LocalDateTime.now();
+                   LocalDateTime newDateTime = dateTime.plusNanos(dateTime.getNano() + sleepTimeinMilliSec * 1000000);
+                   List<Notification> notificationDataForRetries = notificationRepoImpl.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThanEqualTo(0, type, operatorNameArg,  newDateTime, 1);
                    if (!notificationDataForRetries.isEmpty()) {
                        log.info("notification for retry data is not empty and size is " + notificationDataForRetries.size());
                        for (Notification notification : notificationDataForRetries) {
