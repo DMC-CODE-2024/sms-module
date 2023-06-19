@@ -24,12 +24,13 @@ public class CellCardSms implements SmsManagementService{
             SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("cellcard_username");
             SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("cellcard_password");
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("cellcard_callback_url");
+            SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag("cellcard_smsc_code");
             String dlrMask = "7";
             String coding = "0";
             if(msgLang == "kh") {
                 coding = "2";
             }
-            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.CELLCARD.getValue());
+            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.CELLCARD.getValue(), smsc.getValue());
             log.info("Response from Cellcard "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {

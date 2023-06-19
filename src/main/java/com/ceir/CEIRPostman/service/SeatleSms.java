@@ -23,12 +23,13 @@ public class SeatleSms implements SmsManagementService{
             SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("seatel_username");
             SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("seatel_password");
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("seatel_callback_url");
+            SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag("seatel_smsc_code");
             String dlrMask = "7";
             String coding = "0";
             if(msgLang == "kh") {
                 coding = "2";
             }
-            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.SEATEL.getValue());
+            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.SEATEL.getValue(), smsc.getValue());
             log.info("Response from Seatle "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {

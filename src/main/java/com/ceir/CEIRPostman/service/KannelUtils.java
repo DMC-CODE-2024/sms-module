@@ -21,7 +21,7 @@ import java.util.List;
 
 public class KannelUtils {
 
-    public static String sendSMS(String url, String from, String to, String username, String password, String message, String dlrMask, String dlrUrl, String coding, String correlationId, String operatorName) throws IOException {
+    public static String sendSMS(String url, String from, String to, String username, String password, String message, String dlrMask, String dlrUrl, String coding, String correlationId, String operatorName, String smsc) throws IOException {
 //        String url = "http://your-kannel-server:13013/cgi-bin/sendsms";
         try {
             URI uri = new URI(dlrUrl);
@@ -37,6 +37,7 @@ public class KannelUtils {
 
             // Construct the URL with query parameters
             URIBuilder uriBuilder = new URIBuilder(url);
+            uriBuilder.setParameter("smsc", smsc);
             uriBuilder.setParameter("username", username);
             uriBuilder.setParameter("password", password);
             uriBuilder.setParameter("to", to);
