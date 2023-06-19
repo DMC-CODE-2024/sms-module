@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -71,28 +72,32 @@ public class MetfoneSms implements SmsManagementService{
         }
 
         // set the SOAP envelope and body
-        String requestBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.bccsgw.viettel.com/\"><soapenv:Header/><soapenv:Body><web:gwOperation><Input><username>"
-                + username.getValue()
-                + "</username><password>"
-                + password.getValue()
-                + "</password><wscode>sendSMS</wscode><accessKey>"
-                + accessKey.getValue()
-                + "</accessKey><param name=\"message\" value=\""
-                + message
-                + "\"/><param name=\"msisdn\" value=\""
-                + msisdn
-                + "\"/><param name=\"senderId\" value=\""
-                + senderId
-                + "\"/><param name=\"reqID\" value=\""
-                + reqID
-                +"\"/><param name=\"unicode\" value=\""
-                + unicode
-                + "\"/></Input></web:gwOperation></soapenv:Body></soapenv:Envelope>";
+        String requestBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.bccsgw.viettel.com/\">"
+                + " <soapenv:Header/>"
+                + " <soapenv:Body>"
+                + "   <web:gwOperation>"
+                + "     <Input>"
+                + "       <username>" + username.getValue() + "</username>"
+                + "       <password>" + password.getValue() + "</password>"
+                + "       <wscode>sendSMSByDmc</wscode>"
+                + "       <accessKey>" + accessKey.getValue() + "</accessKey>"
+                + "       <!--Zero or more repetitions:-->"
+                + "       <param name=\"message\" value=\"" + message + "\"/>"
+                + "       <param name=\"msisdn\" value=\"" + msisdn + "\"/>"
+                + "       <param name=\"senderId\" value=\"" + "1205" + "\"/>"
+                + "       <param name=\"reqId\" value=\"" + reqID + "\"/>"
+                + "       <param name=\"unicode\" value=\"" + unicode + "\"/>"
+                + "     </Input>"
+                + "   </web:gwOperation>"
+                + " </soapenv:Body>"
+                + "</soapenv:Envelope>";
+
         System.out.println("BODY: "+requestBody);
 
         StringEntity requestEntity = new StringEntity(requestBody, "UTF-8");
         post.setEntity(requestEntity);
         post.setHeader("Content-Type", "text/xml;charset=UTF-8");
+        post.setHeader("SOAPAction", "Post");
 
         // execute the POST request
         HttpResponse response = client.execute(post);
@@ -111,14 +116,22 @@ public class MetfoneSms implements SmsManagementService{
 
             // parse the XML response
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            InputSource is = new InputSource(new StringReader(responseString));
-            Document doc = builder.parse(is);
 
-            // extract the error code and description from the response
-            String errorCode = doc.getElementsByTagName("errorCode").item(0).getTextContent();
-            String errorDescription = doc.getElementsByTagName("errorDescription").item(0).getTextContent();
+            // Parse the XML response string
+            Document document = builder.parse(new InputSource(new StringReader(responseString)));
 
+            // Get the inner 'original' XML content
+            Element originalElement = (Element) document.getElementsByTagName("original").item(0);
+            String originalXml = originalElement.getTextContent();
+
+            // Parse the inner XML content
+            Document originalDocument = builder.parse(new InputSource(new StringReader(originalXml)));
+
+            // Extract errorCode and errorDescription from the inner document
+            String errorCode = originalDocument.getElementsByTagName("errorCode").item(0).getTextContent();
+            String errorDescription = originalDocument.getElementsByTagName("errorDescription").item(0).getTextContent();
             // return the response as a string
             return "errorCode: " + errorCode + ", errorDescription: " + errorDescription;
         }

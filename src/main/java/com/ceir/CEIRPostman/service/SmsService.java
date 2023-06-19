@@ -131,6 +131,18 @@ public class SmsService implements Runnable {
                                      alertDbRepo.saveAlertDb(alertDb);
                                      System.exit(0);
                                  }
+                                 if(!operatorName.equals("default")) {
+                                     notification.setSendSmsInterface(operatorName);
+                                 } else {
+                                     SystemConfigurationDb defaultAggType = systemConfigRepoImpl.getDataByTag("default_agg_type");
+                                     if (defaultAggType.getValue().equals("Operator")) {
+                                         SystemConfigurationDb defaultOperatorName = systemConfigRepoImpl.getDataByTag("default_operator_name");
+                                         notification.setSendSmsInterface(defaultOperatorName.getValue());
+                                     } else if (defaultAggType.getValue().equals("Aggregator")) {
+                                         notification.setSendSmsInterface("aggregator");
+                                     }
+                                 }
+
                                  notificationRepo.save(notification);
                                  smsSentCount++;
                              }
@@ -182,6 +194,17 @@ public class SmsService implements Runnable {
                                } else if (smsStatus == "SERVICE UNAVAILABLE") {
                                    RunningAlertDb alertDb = new RunningAlertDb("Alert1203", "Operator " + operatorNameArg + " is down", 0);
                                    alertDbRepo.saveAlertDb(alertDb);
+                               }
+                               if(!operatorName.equals("default")) {
+                                   notification.setSendSmsInterface(operatorName);
+                               } else {
+                                   SystemConfigurationDb defaultAggType = systemConfigRepoImpl.getDataByTag("default_agg_type");
+                                   if (defaultAggType.getValue().equals("Operator")) {
+                                       SystemConfigurationDb defaultOperatorName = systemConfigRepoImpl.getDataByTag("default_operator_name");
+                                       notification.setSendSmsInterface(defaultOperatorName.getValue());
+                                   } else if (defaultAggType.getValue().equals("Aggregator")) {
+                                       notification.setSendSmsInterface("aggregator");
+                                   }
                                }
                                notificationRepo.save(notification);
                            }

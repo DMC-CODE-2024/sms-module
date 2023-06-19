@@ -90,35 +90,11 @@ public class Notification  implements Serializable{
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private LocalDateTime deliveryTime;
 
+	@Column
+	private String sendSmsInterface;
+
 	public Notification() {
 
-	}
-
-	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, String deliveryStatus, LocalDateTime deliveryTime) {
-		this.id = id;
-		this.createdOn = createdOn;
-		this.modifiedOn = modifiedOn;
-		this.channelType = channelType;
-		this.message = message;
-		this.userId = userId;
-		this.featureId = featureId;
-		this.featureTxnId = featureTxnId;
-		this.featureName = featureName;
-		this.subFeature = subFeature;
-		this.status = status;
-		this.subject = subject;
-		this.retryCount = retryCount;
-		this.referTable = referTable;
-		this.roleType = roleType;
-		this.receiverUserType = receiverUserType;
-		this.email = email;
-		this.msisdn = msisdn;
-		this.operatorName = operatorName;
-		this.notificationSentTime = notificationSentTime;
-		this.corelationId = corelationId;
-		this.msgLang = msgLang;
-		this.deliveryStatus = deliveryStatus;
-		this.deliveryTime = deliveryTime;
 	}
 
 	public Long getId() {
@@ -313,6 +289,42 @@ public class Notification  implements Serializable{
 		this.deliveryTime = deliveryTime;
 	}
 
+	public String getSendSmsInterface() {
+		return sendSmsInterface;
+	}
+
+	public void setSendSmsInterface(String sendSmsInterface) {
+		this.sendSmsInterface = sendSmsInterface;
+	}
+
+	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, String deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
+		this.id = id;
+		this.createdOn = createdOn;
+		this.modifiedOn = modifiedOn;
+		this.channelType = channelType;
+		this.message = message;
+		this.userId = userId;
+		this.featureId = featureId;
+		this.featureTxnId = featureTxnId;
+		this.featureName = featureName;
+		this.subFeature = subFeature;
+		this.status = status;
+		this.subject = subject;
+		this.retryCount = retryCount;
+		this.referTable = referTable;
+		this.roleType = roleType;
+		this.receiverUserType = receiverUserType;
+		this.email = email;
+		this.msisdn = msisdn;
+		this.operatorName = operatorName;
+		this.notificationSentTime = notificationSentTime;
+		this.corelationId = corelationId;
+		this.msgLang = msgLang;
+		this.deliveryStatus = deliveryStatus;
+		this.deliveryTime = deliveryTime;
+		this.sendSmsInterface = sendSmsInterface;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Notification{");
@@ -340,6 +352,7 @@ public class Notification  implements Serializable{
 		sb.append(", msgLang='").append(msgLang).append('\'');
 		sb.append(", deliveryStatus='").append(deliveryStatus).append('\'');
 		sb.append(", deliveryTime=").append(deliveryTime);
+		sb.append(", sendSmsInterface='").append(sendSmsInterface).append('\'');
 		sb.append('}');
 		return sb.toString();
 	}
