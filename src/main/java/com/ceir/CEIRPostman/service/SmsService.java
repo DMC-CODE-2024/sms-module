@@ -105,7 +105,7 @@ public class SmsService implements Runnable {
                              log.info("notification data id= " + notification.getId());
                              if (Objects.nonNull(notification.getMsisdn()) && Objects.nonNull(notification.getOperatorName())) {
                                  SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(notification.getOperatorName());
-                                 String correlationId = UUID.randomUUID().toString();
+                                 String correlationId = UniqueIdGenerator.generateUniqueId(operatorName);
                                  String smsStatus = smsProvider.sendSms(notification.getMsisdn(), from, notification.getMessage(), correlationId, notification.getMsgLang());
                                  if (smsStatus == "SUCCESS") {
                                      LocalDateTime now = LocalDateTime.now();
