@@ -85,7 +85,7 @@ public class Notification  implements Serializable{
 	private String msgLang;
 
 	@Column
-	private String deliveryStatus;
+	private int deliveryStatus;
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private LocalDateTime deliveryTime;
@@ -95,6 +95,34 @@ public class Notification  implements Serializable{
 
 	public Notification() {
 
+	}
+
+	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, int deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
+		this.id = id;
+		this.createdOn = createdOn;
+		this.modifiedOn = modifiedOn;
+		this.channelType = channelType;
+		this.message = message;
+		this.userId = userId;
+		this.featureId = featureId;
+		this.featureTxnId = featureTxnId;
+		this.featureName = featureName;
+		this.subFeature = subFeature;
+		this.status = status;
+		this.subject = subject;
+		this.retryCount = retryCount;
+		this.referTable = referTable;
+		this.roleType = roleType;
+		this.receiverUserType = receiverUserType;
+		this.email = email;
+		this.msisdn = msisdn;
+		this.operatorName = operatorName;
+		this.notificationSentTime = notificationSentTime;
+		this.corelationId = corelationId;
+		this.msgLang = msgLang;
+		this.deliveryStatus = deliveryStatus;
+		this.deliveryTime = deliveryTime;
+		this.sendSmsInterface = sendSmsInterface;
 	}
 
 	public Long getId() {
@@ -273,11 +301,11 @@ public class Notification  implements Serializable{
 		this.msgLang = msgLang;
 	}
 
-	public String getDeliveryStatus() {
+	public int getDeliveryStatus() {
 		return deliveryStatus;
 	}
 
-	public void setDeliveryStatus(String deliveryStatus) {
+	public void setDeliveryStatus(int deliveryStatus) {
 		this.deliveryStatus = deliveryStatus;
 	}
 
@@ -294,34 +322,6 @@ public class Notification  implements Serializable{
 	}
 
 	public void setSendSmsInterface(String sendSmsInterface) {
-		this.sendSmsInterface = sendSmsInterface;
-	}
-
-	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, String deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
-		this.id = id;
-		this.createdOn = createdOn;
-		this.modifiedOn = modifiedOn;
-		this.channelType = channelType;
-		this.message = message;
-		this.userId = userId;
-		this.featureId = featureId;
-		this.featureTxnId = featureTxnId;
-		this.featureName = featureName;
-		this.subFeature = subFeature;
-		this.status = status;
-		this.subject = subject;
-		this.retryCount = retryCount;
-		this.referTable = referTable;
-		this.roleType = roleType;
-		this.receiverUserType = receiverUserType;
-		this.email = email;
-		this.msisdn = msisdn;
-		this.operatorName = operatorName;
-		this.notificationSentTime = notificationSentTime;
-		this.corelationId = corelationId;
-		this.msgLang = msgLang;
-		this.deliveryStatus = deliveryStatus;
-		this.deliveryTime = deliveryTime;
 		this.sendSmsInterface = sendSmsInterface;
 	}
 
@@ -350,7 +350,7 @@ public class Notification  implements Serializable{
 		sb.append(", notificationSentTime=").append(notificationSentTime);
 		sb.append(", corelationId='").append(corelationId).append('\'');
 		sb.append(", msgLang='").append(msgLang).append('\'');
-		sb.append(", deliveryStatus='").append(deliveryStatus).append('\'');
+		sb.append(", deliveryStatus=").append(deliveryStatus);
 		sb.append(", deliveryTime=").append(deliveryTime);
 		sb.append(", sendSmsInterface='").append(sendSmsInterface).append('\'');
 		sb.append('}');
