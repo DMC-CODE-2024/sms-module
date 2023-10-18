@@ -1,17 +1,15 @@
-package com.ceir.CEIRPostman.Repository;
+package com.ceir.CEIRPostman.Repository.app;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Queue;
 
-import org.hibernate.annotations.ParamDef;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import com.ceir.CEIRPostman.model.Notification;
+import com.ceir.CEIRPostman.model.app.Notification;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
 	@Query("select noti from Notification noti where noti.status=?1 and upper(noti.channelType)=upper(?2)")
@@ -22,10 +20,17 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	public List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelType(int status, int retryCount, String operatorName, String channelType);
 
+	public List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelType(int status, int retryCount, List<String> operatorNames, String channelType);
+
 	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType " +
-			"AND n.operatorName = :operatorName AND n.modifiedOn > :modifiedOn AND n.retryCount >= :retryCount")
+			"AND n.operatorName = :operatorName AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
 	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(
 			int status, String channelType, String operatorName, LocalDateTime modifiedOn, int retryCount);
+
+	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType " +
+			"AND n.operatorName IN :operatorNames AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
+	List<Notification> findByStatusAndChannelTypeAndOperatorNameInAndModifiedOnAndRetryCountGreaterThan(
+			int status, String channelType, List<String> operatorNames, LocalDateTime modifiedOn, int retryCount);
 
 	@Modifying
 	@Query("UPDATE Notification n SET n.retryCount = :retryCount WHERE n.id = :id")

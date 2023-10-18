@@ -1,7 +1,7 @@
 //package com.ceir.CEIRPostman;
 //
 //import com.ceir.CEIRPostman.RepositoryService.*;
-//import com.ceir.CEIRPostman.model.Notification;
+//import com.ceir.CEIRPostman.model.app.Notification;
 //import com.ceir.CEIRPostman.service.SmsManagementService;
 //import com.ceir.CEIRPostman.service.SmsSendFactory;
 //import com.ceir.CEIRPostman.service.SmsService;

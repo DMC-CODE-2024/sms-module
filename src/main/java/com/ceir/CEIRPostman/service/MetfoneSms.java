@@ -1,37 +1,37 @@
 package com.ceir.CEIRPostman.service;
 
 import com.ceir.CEIRPostman.RepositoryService.SystemConfigurationDbRepoImpl;
-import com.ceir.CEIRPostman.model.SystemConfigurationDb;
+import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.rmi.ServerException;
-import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class MetfoneSms implements SmsManagementService{
 
-    private final Logger log = Logger.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
     @Override
@@ -59,17 +59,23 @@ public class MetfoneSms implements SmsManagementService{
         SystemConfigurationDb accessKey = systemConfigRepoImpl.getDataByTag("metfone_access_key");
         SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("metfone_username");
         SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("metfone_password");
+        SystemConfigurationDb wscode = Optional.ofNullable(systemConfigRepoImpl.getDataByTag("metfone_wscode")).orElse(new SystemConfigurationDb("metfone_wscode", "sendSMSByDmc"));
+//        SystemConfigurationDb senderId = systemConfigRepoImpl.getDataByTag("metfone_senderId");
 //        String url = "https://xxx.metfone.com.kh/apigw?wsdl";
 
-        String responseString = null;
+        String responseString;
 
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url.getValue());
-        Boolean unicode = msgLang == "kh" ? true : false;
-        if(unicode) {
-            byte[] byteArray = message.getBytes(StandardCharsets.UTF_16BE);
-            message = Arrays.toString(byteArray);
-        }
+        Boolean unicode = msgLang.equals("kh") ? true : false;
+//        if(unicode) {
+//            message = Base64.getEncoder().encodeToString(message.getBytes(StandardCharsets.UTF_16BE));
+//            byte[] byteArray = message.getBytes(StandardCharsets.UTF_16BE);
+//            message = Arrays.toString(byteArray);
+//        } else {
+//            message = StringEscapeUtils.escapeXml11(message);
+//        }
+        message = StringEscapeUtils.escapeXml11(message);
 
         // set the SOAP envelope and body
         String requestBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://webservice.bccsgw.viettel.com/\">"
@@ -79,12 +85,12 @@ public class MetfoneSms implements SmsManagementService{
                 + "     <Input>"
                 + "       <username>" + username.getValue() + "</username>"
                 + "       <password>" + password.getValue() + "</password>"
-                + "       <wscode>sendSMSByDmc</wscode>"
+                + "       <wscode>"+wscode.getValue()+"</wscode>"
                 + "       <accessKey>" + accessKey.getValue() + "</accessKey>"
                 + "       <!--Zero or more repetitions:-->"
                 + "       <param name=\"message\" value=\"" + message + "\"/>"
                 + "       <param name=\"msisdn\" value=\"" + msisdn + "\"/>"
-                + "       <param name=\"senderId\" value=\"" + "1205" + "\"/>"
+                + "       <param name=\"senderId\" value=\"" + senderId + "\"/>"
                 + "       <param name=\"reqId\" value=\"" + reqID + "\"/>"
                 + "       <param name=\"unicode\" value=\"" + unicode + "\"/>"
                 + "     </Input>"
@@ -92,7 +98,8 @@ public class MetfoneSms implements SmsManagementService{
                 + " </soapenv:Body>"
                 + "</soapenv:Envelope>";
 
-        System.out.println("BODY: "+requestBody);
+        System.out.println("Request url for: "+msisdn+", url: "+ url.getValue());
+        System.out.println("Request body for: "+msisdn+", body: "+ requestBody);
 
         StringEntity requestEntity = new StringEntity(requestBody, "UTF-8");
         post.setEntity(requestEntity);

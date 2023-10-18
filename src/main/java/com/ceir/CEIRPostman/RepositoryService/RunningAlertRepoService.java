@@ -3,8 +3,8 @@ package com.ceir.CEIRPostman.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ceir.CEIRPostman.Repository.RunningAlertDbRepo;
-import com.ceir.CEIRPostman.model.RunningAlertDb;
+import com.ceir.CEIRPostman.Repository.app.RunningAlertDbRepo;
+import com.ceir.CEIRPostman.model.app.RunningAlertDb;
 
 
 

@@ -2,8 +2,8 @@ package com.ceir.CEIRPostman.RepositoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ceir.CEIRPostman.Repository.SystemConfigurationDbRepository;
-import com.ceir.CEIRPostman.model.SystemConfigurationDb;
+import com.ceir.CEIRPostman.Repository.app.SystemConfigurationDbRepository;
+import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 
 @Service
 public class SystemConfigurationDbRepoImpl {

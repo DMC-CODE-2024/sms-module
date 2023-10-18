@@ -1,7 +1,7 @@
-package com.ceir.CEIRPostman.Repository;
+package com.ceir.CEIRPostman.Repository.app;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.ceir.CEIRPostman.model.SystemConfigurationDb;
+import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 
 public interface SystemConfigurationDbRepository extends JpaRepository<SystemConfigurationDb, Long> {
 

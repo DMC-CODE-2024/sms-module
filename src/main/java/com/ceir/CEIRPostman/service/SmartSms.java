@@ -1,7 +1,7 @@
 package com.ceir.CEIRPostman.service;
 
 import com.ceir.CEIRPostman.RepositoryService.SystemConfigurationDbRepoImpl;
-import com.ceir.CEIRPostman.model.SystemConfigurationDb;
+import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -16,16 +16,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.rmi.ServerException;
 import java.text.DateFormat;
@@ -42,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class SmartSms implements SmsManagementService{
 
-    private final Logger log = Logger.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
     @Override
@@ -66,8 +65,11 @@ public class SmartSms implements SmsManagementService{
                 String[] resp = getToken();
                 token = resp[0];
                 String expiresIn = resp[1];
+                savedToken.setValue(token);
+                savedToken.setModifiedOn(new Date());
                 tokenTimeoutInSec.setValue(expiresIn);
                 systemConfigRepoImpl.saveConfigDb(tokenTimeoutInSec);
+                systemConfigRepoImpl.saveConfigDb(savedToken);
             }
             String resp = sendRequest(to, from, message, correlationId, callbackUrl.getValue(), correlationId, senderName.getValue(), token).toString();
             log.info("Response from Smart "+resp);
@@ -97,7 +99,15 @@ public class SmartSms implements SmsManagementService{
 
         // Set request headers
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.getMimeType());
-        String authHeader = "ZTNBMDdxWVVmenY2NDkzNGRxTUhlTVpnNXlJYTpvWjBEV3NQcDJuYkg1U3YxNTlZOWYxNWZFZW9h";
+        String clientIdValue = clientId.getValue();
+        String clientSecretValue = clientSecret.getValue();
+
+        // Combine clientId and clientSecret with a colon
+        String credentials = clientIdValue + ":" + clientSecretValue;
+
+        // Encode credentials in Base64
+        String authHeader = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+//        String authHeader = "ZTNBMDdxWVVmenY2NDkzNGRxTUhlTVpnNXlJYTpvWjBEV3NQcDJuYkg1U3YxNTlZOWYxNWZFZW9h";
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authHeader);
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
@@ -163,6 +173,8 @@ public class SmartSms implements SmsManagementService{
         HttpPost httpPost = null;
         while (retry) {
             httpPost = getHttpPostEntity(url, accessToken, to, senderAddress, message,clientCorrelator, notifyURL, callbackData, senderName);
+            System.out.println("Request URL for: " + to + ", url: "+  httpPost.getURI().toString());
+            System.out.println("Request Body for: " + to + ", url: " + EntityUtils.toString(httpPost.getEntity(), "UTF-8"));
             // Execute request
             try {
                 String responseBody = null;
@@ -215,7 +227,7 @@ public class SmartSms implements SmsManagementService{
         HttpPost httpPost = new HttpPost(url);
 
         // Set request headers
-        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+        httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType()+ "; charset=UTF-8");
         httpPost.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
@@ -237,7 +249,7 @@ public class SmartSms implements SmsManagementService{
         outboundSMSMessageRequest.put("senderName", senderName);
         requestBody.put("outboundSMSMessageRequest", outboundSMSMessageRequest);
 
-        httpPost.setEntity(new StringEntity(requestBody.toString()));
+        httpPost.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON.withCharset("UTF-8")));
         return httpPost;
     }
 

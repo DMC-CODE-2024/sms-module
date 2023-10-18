@@ -1,4 +1,4 @@
-package com.ceir.CEIRPostman.model;
+package com.ceir.CEIRPostman.model.app;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -57,6 +57,10 @@ public class SystemConfigurationDb implements Serializable {
 
 	public SystemConfigurationDb() {
 		super();
+	}
+	public SystemConfigurationDb(String tag, String value) {
+		this.tag = tag;
+		this.value = value;
 	}
 
 	public Integer getId() {

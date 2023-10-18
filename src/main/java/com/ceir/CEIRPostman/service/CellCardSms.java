@@ -2,17 +2,21 @@ package com.ceir.CEIRPostman.service;
 
 import com.ceir.CEIRPostman.RepositoryService.SystemConfigurationDbRepoImpl;
 import com.ceir.CEIRPostman.constants.OperatorTypes;
-import com.ceir.CEIRPostman.model.SystemConfigurationDb;
+import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.rmi.ServerException;
 
 @Component
 public class CellCardSms implements SmsManagementService{
-    private final Logger log = Logger.getLogger(getClass());
+    private final Logger log = LogManager.getLogger(getClass());
+    @Value("${dlrMask}")
+    private String dlrMaskValue;
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
 
@@ -25,9 +29,9 @@ public class CellCardSms implements SmsManagementService{
             SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("cellcard_password");
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("cellcard_callback_url");
             SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag("cellcard_smsc_code");
-            String dlrMask = "7";
+            String dlrMask = dlrMaskValue;
             String coding = "0";
-            if(msgLang == "kh") {
+            if(msgLang.equals("kh")) {
                 coding = "2";
             }
             String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.CELLCARD.getValue(), smsc.getValue());

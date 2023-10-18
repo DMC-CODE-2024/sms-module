@@ -1,4 +1,4 @@
-package com.ceir.CEIRPostman.model;
+package com.ceir.CEIRPostman.model.app;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.ceir.CEIRPostman.model.constants;
+package com.ceir.CEIRPostman.model.app.constants;
 
 public enum NotificationStatus {
 	INIT(1), PROCESSING(1), SUCCESS(2);

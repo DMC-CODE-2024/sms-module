@@ -1,18 +1,16 @@
-package com.ceir.CEIRPostman.model;
+package com.ceir.CEIRPostman.model.app;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.*;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
 @Entity
-@Table(name = "notification")
-public class Notification  implements Serializable{
+public class Notification implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,58 +25,52 @@ public class Notification  implements Serializable{
 	@UpdateTimestamp
 	private LocalDateTime modifiedOn;
 
-	@Column(length = 20, nullable = false)
-	private String channelType="";
+	private String channelType;
 
-	@Column(length = 1000, nullable = false)
-	private String message="";
+	@Column(length = 1000)
+	private String message;
 
 	private Long userId;
 
 	private Long featureId;
 
-	@Column(length = 20, nullable = false)
-	private String featureTxnId="";
+	private String featureTxnId;
 
-	@Column(length = 50, nullable = false)
-	private String featureName="";
+	private String featureName;
 
-	@Column(length = 50, nullable = false)
-	private String subFeature="";
+	private String subFeature;
 
-	@Column(nullable = false)
 	private Integer status;
 
-	@Column(length = 255, nullable = false)
-	private String subject="";
+	private String subject;
 
-	@Column(nullable = false)
 	private Integer retryCount;
 
-	@Column(length = 50, nullable = false)
-	private String referTable="";
+	@Column(length = 10)
+	private String referTable;
 
-	@Column(length = 30, nullable = false)
-	private String roleType="";
+	@Column(length = 20)
+	private String roleType;
 
-	@Column(length = 30, nullable = false)
-	private String receiverUserType="";
+	@Column(length = 50)
+	private String receiverUserType;
 
+	private Integer authorityStatus;
 
-	@Column(length = 100, nullable = false)
-	private String email="";
+	@Column(nullable = true)
+	private String email;
 
-	@Column(length = 20, nullable = false)
-	private String msisdn="";
+	@Column(nullable = false)
+	private String msisdn;
 
-	@Column(length = 20, nullable = false, unique = true)
-	private String operatorName="";
+	@Column(nullable = false, unique = true)
+	private String operatorName;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime notificationSentTime;
 
-	@Column(length = 40, nullable = false, unique = true)
+	@Column(nullable = false, unique = true)
 	private String corelationId;
 
 	@Column(nullable = false)
@@ -97,7 +89,15 @@ public class Notification  implements Serializable{
 
 	}
 
-	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, int deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
+	public String getSendSmsInterface() {
+		return sendSmsInterface;
+	}
+
+	public void setSendSmsInterface(String sendSmsInterface) {
+		this.sendSmsInterface = sendSmsInterface;
+	}
+
+	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, Integer authorityStatus, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, int deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.modifiedOn = modifiedOn;
@@ -114,6 +114,7 @@ public class Notification  implements Serializable{
 		this.referTable = referTable;
 		this.roleType = roleType;
 		this.receiverUserType = receiverUserType;
+		this.authorityStatus = authorityStatus;
 		this.email = email;
 		this.msisdn = msisdn;
 		this.operatorName = operatorName;
@@ -122,6 +123,18 @@ public class Notification  implements Serializable{
 		this.msgLang = msgLang;
 		this.deliveryStatus = deliveryStatus;
 		this.deliveryTime = deliveryTime;
+		this.sendSmsInterface = sendSmsInterface;
+	}
+
+	public Notification(String channelType, String message, String featureName, Integer status, Integer retryCount, String msisdn, String operatorName, String msgLang, String sendSmsInterface) {
+		this.channelType = channelType;
+		this.message = message;
+		this.featureName = featureName;
+		this.status = status;
+		this.retryCount = retryCount;
+		this.msisdn = msisdn;
+		this.operatorName = operatorName;
+		this.msgLang = msgLang;
 		this.sendSmsInterface = sendSmsInterface;
 	}
 
@@ -253,6 +266,14 @@ public class Notification  implements Serializable{
 		this.receiverUserType = receiverUserType;
 	}
 
+	public Integer getAuthorityStatus() {
+		return authorityStatus;
+	}
+
+	public void setAuthorityStatus(Integer authorityStatus) {
+		this.authorityStatus = authorityStatus;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -317,14 +338,6 @@ public class Notification  implements Serializable{
 		this.deliveryTime = deliveryTime;
 	}
 
-	public String getSendSmsInterface() {
-		return sendSmsInterface;
-	}
-
-	public void setSendSmsInterface(String sendSmsInterface) {
-		this.sendSmsInterface = sendSmsInterface;
-	}
-
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Notification{");
@@ -344,6 +357,7 @@ public class Notification  implements Serializable{
 		sb.append(", referTable='").append(referTable).append('\'');
 		sb.append(", roleType='").append(roleType).append('\'');
 		sb.append(", receiverUserType='").append(receiverUserType).append('\'');
+		sb.append(", authorityStatus=").append(authorityStatus);
 		sb.append(", email='").append(email).append('\'');
 		sb.append(", msisdn='").append(msisdn).append('\'');
 		sb.append(", operatorName='").append(operatorName).append('\'');
