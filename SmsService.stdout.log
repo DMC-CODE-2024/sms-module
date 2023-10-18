@@ -1,0 +1,9 @@
+20:35:17,180  INFO SmsService:[51] - starting send sms process
+  20:35:19,895  INFO SmsService:[103] - sms retry count value: 3, sms retry interval: 15000 and tps: 10
+  20:35:19,896  INFO SmsService:[119] - inside Sms process
+  20:35:19,896  INFO SmsService:[121] - inside Sms process
+  20:35:19,899  INFO SmsService:[122] - going to fetch data from notification table for operator=smart, status=0, retryCount=0 and channel type=SMS
+  20:35:20,181  INFO SmsService:[230] - no sms is pending to send
+  20:35:20,181  INFO SmsService:[232] - retrying for failed sms
+  20:35:22,271  INFO SmsService:[350] - exit from  service
+  

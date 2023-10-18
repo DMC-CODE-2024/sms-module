@@ -1,0 +1,8 @@
+[2023-09-09 20:35:17,180][INFO ] [UM] [SmsService.java][run()] [51] [msg=starting send sms process]
+[2023-09-09 20:35:19,895][INFO ] [UM] [SmsService.java][run()] [103] [msg=sms retry count value: 3, sms retry interval: 15000 and tps: 10]
+[2023-09-09 20:35:19,896][INFO ] [UM] [SmsService.java][run()] [119] [msg=inside Sms process]
+[2023-09-09 20:35:19,896][INFO ] [UM] [SmsService.java][run()] [121] [msg=inside Sms process]
+[2023-09-09 20:35:19,899][INFO ] [UM] [SmsService.java][run()] [122] [msg=going to fetch data from notification table for operator=smart, status=0, retryCount=0 and channel type=SMS]
+[2023-09-09 20:35:20,181][INFO ] [UM] [SmsService.java][run()] [230] [msg=no sms is pending to send]
+[2023-09-09 20:35:20,181][INFO ] [UM] [SmsService.java][run()] [232] [msg=retrying for failed sms]
+[2023-09-09 20:35:22,271][INFO ] [UM] [SmsService.java][run()] [350] [msg=exit from  service]
