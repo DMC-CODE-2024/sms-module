@@ -57,6 +57,7 @@ public class SmsService implements Runnable {
           String type = "SMS";
           String operatorNameArg = null;
          String featureName = operatorName+" SMS Notification Module";
+         LocalDateTime startTime = LocalDateTime.now();
          ModulesAuditTrail startAudit = ModulesAuditTrailBuilder.forInsert(201, "Initial", "NA", featureName, "INSERT", "Started SMS module process");
          startAudit = modulesAuditTrailRepository.save(startAudit);
          moduleAudiTrailId = startAudit.getId();
@@ -77,7 +78,7 @@ public class SmsService implements Runnable {
 //                  RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                  alertDbRepo.saveAlertDb(alertDb);
               }
-              ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Operator Name does not exist "+operatorName, featureName, "UPDATE", "Alert1205", 0 , 0, executionStartTime);
+              ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Operator Name does not exist "+operatorName, featureName, "UPDATE", "Alert1205", 0 , 0, executionStartTime, startTime);
               modulesAuditTrailRepository.save(tacAudit);
               e.printStackTrace();
               System.exit(0);
@@ -112,7 +113,7 @@ public class SmsService implements Runnable {
 //                  RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                  alertDbRepo.saveAlertDb(alertDb);
               }
-              ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", e.getMessage(), featureName, "UPDATE", "Alert1202", 0 , 0, executionStartTime);
+              ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", e.getMessage(), featureName, "UPDATE", "Alert1202", 0 , 0, executionStartTime, startTime);
               modulesAuditTrailRepository.save(tacAudit);
               e.printStackTrace();
               System.exit(0);
@@ -152,7 +153,7 @@ public class SmsService implements Runnable {
 //                                         RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                         alertDbRepo.saveAlertDb(alertDb);
                                      }
-                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not Achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime);
+                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not Achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime, startTime);
                                      modulesAuditTrailRepository.save(tacAudit);
                                  }
                                  tsms = System.currentTimeMillis();
@@ -183,7 +184,7 @@ public class SmsService implements Runnable {
 //                                             RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                             alertDbRepo.saveAlertDb(alertDb);
                                          }
-                                         ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime);
+                                         ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
                                          modulesAuditTrailRepository.save(tacAudit);
                                      }
                                  } else if (smsStatus == "SERVICE_UNAVAILABLE") {
@@ -195,7 +196,7 @@ public class SmsService implements Runnable {
 //                                         RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                         alertDbRepo.saveAlertDb(alertDb);
                                      }
-                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime);
+                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime, startTime);
                                      modulesAuditTrailRepository.save(tacAudit);
                                  } else {
                                      log.info("error in sending Sms for "+operatorNameArg);
@@ -208,7 +209,7 @@ public class SmsService implements Runnable {
 //                                         RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                         alertDbRepo.saveAlertDb(alertDb);
                                      }
-                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS status unknown "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime);
+                                     ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS status unknown "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
                                      modulesAuditTrailRepository.save(tacAudit);
 //                                     RunningAlertDb alertDb = new RunningAlertDb("Alert1201", "Database connection failed or login failed due to credentials", 0);
                                  }
@@ -260,7 +261,7 @@ public class SmsService implements Runnable {
 //                                       RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                       alertDbRepo.saveAlertDb(alertDb);
                                    }
-                                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime);
+                                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime, startTime);
                                    modulesAuditTrailRepository.save(tacAudit);
                                }
                                tsms = System.currentTimeMillis();
@@ -290,7 +291,7 @@ public class SmsService implements Runnable {
 //                                           RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                           alertDbRepo.saveAlertDb(alertDb);
                                        }
-                                       ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 200, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime);
+                                       ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 200, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
                                        modulesAuditTrailRepository.save(tacAudit);
                                    }
                                } else if (smsStatus == "SERVICE UNAVAILABLE") {
@@ -302,7 +303,7 @@ public class SmsService implements Runnable {
 //                                       RunningAlertDb alertDb = new RunningAlertDb(alert.get().getAlertId(), operatorName, 0);
 //                                       alertDbRepo.saveAlertDb(alertDb);
                                    }
-                                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for operator "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime);
+                                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for operator "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime, startTime);
                                    modulesAuditTrailRepository.save(tacAudit);
                                }
                                if(!operatorName.equals("default")) {
@@ -323,7 +324,7 @@ public class SmsService implements Runnable {
                        log.info("total sms sent=  " + successCount);
                        log.info("sms failed to send: " + failureCount);
                    }
-                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 200,  "Success", "NA", featureName, "UPDATE", "Process Completed for SMS module process", successCount , failureCount, executionStartTime);
+                   ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 200,  "Success", "NA", featureName, "UPDATE", "Process Completed for SMS module process", successCount , failureCount, executionStartTime, startTime);
                    modulesAuditTrailRepository.save(tacAudit);
                } catch (DataAccessException e) {
                    Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1201");
@@ -345,7 +346,7 @@ public class SmsService implements Runnable {
                        ModulesAuditTrail audit = ModulesAuditTrailBuilder.forInsert(501, "NA", e.getMessage(), featureName, "INSERT", "Exception during SMS module process");
                        modulesAuditTrailRepository.save(audit);
                    } else {
-                       ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", e.getMessage(), featureName, "UPDATE", "Exception during SMS module process", 0 , 0, executionStartTime);
+                       ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", e.getMessage(), featureName, "UPDATE", "Exception during SMS module process", 0 , 0, executionStartTime, startTime);
                        modulesAuditTrailRepository.save(tacAudit);
                    }
                }

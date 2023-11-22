@@ -32,10 +32,11 @@ public class ModulesAuditTrailBuilder {
 
     public static ModulesAuditTrail forUpdate(int id, Integer statusCode, String status,
                                               String errorMessage, String moduleName,
-                                              String action, String info, int count, int failureCount, int executionTime) {
+                                              String action, String info, int count, int failureCount, int executionTime, LocalDateTime startTime) {
         ModulesAuditTrail modulesAuditTrail = new ModulesAuditTrail();
 
         modulesAuditTrail.setId(id);
+        modulesAuditTrail.setCreatedOn(startTime);
         modulesAuditTrail.setModifiedOn(LocalDateTime.now());
         modulesAuditTrail.setExecutionTime(Math.toIntExact(System.currentTimeMillis() / 1000) - executionTime);
         modulesAuditTrail.setStatusCode(statusCode);

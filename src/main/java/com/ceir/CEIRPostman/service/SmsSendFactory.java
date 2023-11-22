@@ -10,7 +10,7 @@ public class SmsSendFactory {
     SmartSms smart;
 
     @Autowired
-    MetfoneSms metfone;
+    MetfoneKanelSms metfone;
 
     @Autowired
     SeatleSms seatle;
