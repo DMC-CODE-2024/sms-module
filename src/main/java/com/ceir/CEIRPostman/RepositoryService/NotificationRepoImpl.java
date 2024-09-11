@@ -31,9 +31,33 @@ public class NotificationRepoImpl {
 		}
 	}
 
-	public List<Notification> dataByStatusAndRetryCountAndOperatorNameInAndChannelType(int status,int retryCount, List<String> operatorNames, String channelType) {
+	public List<Notification> dataByStatusAndRetryCountAndChannelTypeV2(int status,int retryCount, String channelType) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatusAndRetryCountAndOperatorNameInAndChannelType(status,retryCount, operatorNames, channelType);
+			List<Notification> notification=notificationRepository.findByStatusAndRetryCountAndChannelTypeAndSmsScheduledTimeLessThanEqual(status,retryCount, channelType, LocalDateTime.now());
+			return notification;
+		}
+		catch(Exception e) {
+			log.info("error occurs while fetch notification data");
+			log.info(e.toString());
+			return new ArrayList<Notification>();
+		}
+	}
+
+	public List<Notification> dataByStatusAndRetryCountAndChannelType(int status,int retryCount, String channelType) {
+		try {
+			List<Notification> notification=notificationRepository.findByStatusAndRetryCountAndChannelType(status,retryCount, channelType);
+			return notification;
+		}
+		catch(Exception e) {
+			log.info("error occurs while fetch notification data");
+			log.info(e.toString());
+			return new ArrayList<Notification>();
+		}
+	}
+
+	public List<Notification> dataByStatusAndRetryCountAndOperatorNameInAndChannelTypeV2(int status,int retryCount, List<String> operatorNames, String channelType) {
+		try {
+			List<Notification> notification=notificationRepository.findByStatusAndRetryCountAndOperatorNameInAndChannelTypeAndSmsScheduledTimeLessThanEqual(status,retryCount, operatorNames, channelType, LocalDateTime.now());
 			return notification;
 		}
 		catch(Exception e) {
@@ -53,9 +77,9 @@ public class NotificationRepoImpl {
 //            return new ArrayList<Notification>();
 //		}
 //	}
-	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThanEqualTo(int status, String type, String operatorName, LocalDateTime modifiedOn, int retryCount) {
+	public List<Notification> findByStatusAndChannelTypeAndModifiedOnAndRetryCountGreaterThanEqualTo(int status, String type, LocalDateTime modifiedOn, int retryCount) {
 		try {
-			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(status, type, operatorName, modifiedOn, retryCount);
+			List<Notification> notification=notificationRepository.findByStatusAndChannelTypeAndModifiedOnAndRetryCountGreaterThan(status, type, modifiedOn, retryCount);
 			return notification;
 		}
 		catch(Exception e) {

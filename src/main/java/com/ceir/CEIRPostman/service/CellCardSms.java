@@ -21,7 +21,7 @@ public class CellCardSms implements SmsManagementService{
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
 
     @Override
-    public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
+    public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
         try {
             log.info("Sending sms via Cellcard: "+to+","+from+","+message+","+","+correlationId);
             SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag("cellcard_sms_url");

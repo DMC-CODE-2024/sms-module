@@ -32,26 +32,6 @@ public class App
 		new Thread(fetch).start();
 	}
 
-	@Bean
-	public static String operatorName() {
-		String operatorName = args.length > 0 ? args[0] : null;
-		return operatorName;
-	}
-
-	@Bean
-	public SmsService smsService() {
-		List<String> operators = new ArrayList<>();
-		String operatorName = operatorName();
-		if(operatorName.contains("=") && operatorName.contains(OperatorTypes.DEFAULT.getValue())){
-			String [] defaultArgs = (operatorName.split("="));
-			operators = new ArrayList<>(Arrays.asList(defaultArgs[1].split(",")));
-			operators.add(defaultArgs[0]);
-			return new SmsService(defaultArgs[0], operators);
-		} else {
-			return new SmsService(operatorName, operators);
-		}
-	}
-
 }
 
 

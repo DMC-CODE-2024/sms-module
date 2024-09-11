@@ -19,13 +19,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	public List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqual(int status, String channelType, String operatorName, LocalDateTime modifiedOn);
 
 	public List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelType(int status, int retryCount, String operatorName, String channelType);
+	public List<Notification> findByStatusAndRetryCountAndChannelTypeAndSmsScheduledTimeLessThanEqual(int status, int retryCount, String channelType, LocalDateTime smsScheduledTime);
 
-	public List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelType(int status, int retryCount, List<String> operatorNames, String channelType);
+	public List<Notification> findByStatusAndRetryCountAndChannelType(int status, int retryCount, String channelType);
+	public List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelTypeAndSmsScheduledTimeLessThanEqual(int status, int retryCount, List<String> operatorNames, String channelType, LocalDateTime smsScheduledTime);
 
 	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType " +
-			"AND n.operatorName = :operatorName AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
-	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(
-			int status, String channelType, String operatorName, LocalDateTime modifiedOn, int retryCount);
+			"AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
+	List<Notification> findByStatusAndChannelTypeAndModifiedOnAndRetryCountGreaterThan(
+			int status, String channelType, LocalDateTime modifiedOn, int retryCount);
 
 	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType " +
 			"AND n.operatorName IN :operatorNames AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")

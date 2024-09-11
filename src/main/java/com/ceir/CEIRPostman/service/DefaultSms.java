@@ -1,6 +1,8 @@
 package com.ceir.CEIRPostman.service;
 
+import com.ceir.CEIRPostman.Repository.app.OperatorRepository;
 import com.ceir.CEIRPostman.RepositoryService.SystemConfigurationDbRepoImpl;
+import com.ceir.CEIRPostman.model.app.Operator;
 import com.ceir.CEIRPostman.model.app.SystemConfigurationDb;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.ServerException;
+import java.util.Optional;
 
 @Component
 public class DefaultSms implements SmsManagementService{
@@ -28,18 +31,24 @@ public class DefaultSms implements SmsManagementService{
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
     @Autowired
     SmsSendFactory smsSendFactory;
+    @Autowired
+    OperatorRepository operatorRepository;
 
     @Override
-    public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
+    public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
         try {
             SystemConfigurationDb defaultAggType = systemConfigRepoImpl.getDataByTag("default_agg_type");
             log.info("Sending sms via Aggregator for type: "+defaultAggType.getValue()+","+to+","+from+","+message+","+","+correlationId);
             if (defaultAggType.getValue().equals("Operator")) {
                 SystemConfigurationDb defaultOperatorName = systemConfigRepoImpl.getDataByTag("default_operator_name");
-                SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(defaultOperatorName.getValue());
-                 String fromSender = systemConfigRepoImpl.getDataByTag(defaultOperatorName.getValue()+"_sender_id").getValue();
-                String smsStatus = smsProvider.sendSms(to, fromSender, message, correlationId, msgLang);
-                return smsStatus;
+                Optional<Operator> operatorEntity = operatorRepository.findByOperatorName(operatorName.toLowerCase());
+                if(operatorEntity.isPresent()) {
+                    SmsManagementService smsProvider = smsSendFactory.getSmsManagementService(defaultOperatorName.getValue(), operatorEntity.get().getChannelType());
+                    String fromSender = systemConfigRepoImpl.getDataByTag(defaultOperatorName.getValue()+"_sender_id").getValue();
+                    return smsProvider.sendSms(operatorName.toLowerCase(), to, fromSender, message, correlationId, msgLang);
+                } else {
+                    throw new Exception("Operator not found with name: " + operatorName);
+                }
             } else if (defaultAggType.getValue().equals("Aggregator")) {
                 SystemConfigurationDb aggUrl = systemConfigRepoImpl.getDataByTag("agg_url");
                 SystemConfigurationDb aggUsername = systemConfigRepoImpl.getDataByTag("agg_username");

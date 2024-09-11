@@ -35,7 +35,7 @@ public class MetfoneSms implements SmsManagementService{
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
     @Override
-    public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
+    public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
         try{
             log.info("Sending sms via Metfone: "+to+","+from+","+message+","+","+correlationId);
             String resp = sendRequest(message,to, from, correlationId, msgLang);

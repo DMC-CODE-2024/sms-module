@@ -10,24 +10,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.rmi.ServerException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
-public class MetfoneKanelSms implements SmsManagementService{
+public class KanelService implements SmsManagementService{
     private final Logger log = LogManager.getLogger(getClass());
     @Value("${dlrMask}")
     private String dlrMaskValue;
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
+
     @Override
     public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
         try {
-            log.info("Sending sms via Metfone: "+to+","+from+","+message+","+","+correlationId);
-            SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag("metfone_sms_url");
-            SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag("metfone_username");
-            SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("metfone_password");
-            SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("metfone_callback_url");
-            SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag("metfone_smsc_code");
+            log.info("Sending sms via " + operatorName + ": " + to + "," + from + "," + message + "," + correlationId);
+
+            Map<String, String> operatorPropertyMap = getOperatorPropertyMap(operatorName);
+
+            SystemConfigurationDb url = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("url"));
+            SystemConfigurationDb username = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("username"));
+            SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("password"));
+            SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("callback_url"));
+            SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("smsc"));
+
             String dlrMask = dlrMaskValue;
             String coding = "0";
             if(msgLang.equals("kh")) {
@@ -39,13 +45,19 @@ public class MetfoneKanelSms implements SmsManagementService{
         } catch (ClientProtocolException cp) {
             cp.printStackTrace();
             return "FAILED";
-        } catch (ServerException se) {
-            se.printStackTrace();
-            return "SERVICE_UNAVAILABLE";
         } catch (Exception e) {
             e.printStackTrace();
             return "SERVICE_UNAVAILABLE";
         }
     }
-}
 
+    private Map<String, String> getOperatorPropertyMap(String operatorName) {
+        Map<String, String> operatorPropertyMap = new HashMap<>();
+        operatorPropertyMap.put("url", operatorName + "_sms_url");
+        operatorPropertyMap.put("username", operatorName + "_username");
+        operatorPropertyMap.put("password", operatorName + "_password");
+        operatorPropertyMap.put("callback_url", operatorName + "_callback_url");
+        operatorPropertyMap.put("smsc", operatorName + "_smsc_code");
+        return operatorPropertyMap;
+    }
+}

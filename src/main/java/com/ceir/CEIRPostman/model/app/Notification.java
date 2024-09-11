@@ -55,7 +55,7 @@ public class Notification implements Serializable{
 	@Column(length = 50)
 	private String receiverUserType;
 
-	private Integer authorityStatus;
+//	private Integer authorityStatus;
 
 	@Column(nullable = true)
 	private String email;
@@ -85,19 +85,14 @@ public class Notification implements Serializable{
 	@Column
 	private String sendSmsInterface;
 
+	@Column
+	private LocalDateTime smsScheduledTime;
+
 	public Notification() {
 
 	}
 
-	public String getSendSmsInterface() {
-		return sendSmsInterface;
-	}
-
-	public void setSendSmsInterface(String sendSmsInterface) {
-		this.sendSmsInterface = sendSmsInterface;
-	}
-
-	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, Integer authorityStatus, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, int deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface) {
+	public Notification(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String channelType, String message, Long userId, Long featureId, String featureTxnId, String featureName, String subFeature, Integer status, String subject, Integer retryCount, String referTable, String roleType, String receiverUserType, String email, String msisdn, String operatorName, LocalDateTime notificationSentTime, String corelationId, String msgLang, int deliveryStatus, LocalDateTime deliveryTime, String sendSmsInterface, LocalDateTime smsScheduledTime) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.modifiedOn = modifiedOn;
@@ -114,7 +109,6 @@ public class Notification implements Serializable{
 		this.referTable = referTable;
 		this.roleType = roleType;
 		this.receiverUserType = receiverUserType;
-		this.authorityStatus = authorityStatus;
 		this.email = email;
 		this.msisdn = msisdn;
 		this.operatorName = operatorName;
@@ -124,18 +118,7 @@ public class Notification implements Serializable{
 		this.deliveryStatus = deliveryStatus;
 		this.deliveryTime = deliveryTime;
 		this.sendSmsInterface = sendSmsInterface;
-	}
-
-	public Notification(String channelType, String message, String featureName, Integer status, Integer retryCount, String msisdn, String operatorName, String msgLang, String sendSmsInterface) {
-		this.channelType = channelType;
-		this.message = message;
-		this.featureName = featureName;
-		this.status = status;
-		this.retryCount = retryCount;
-		this.msisdn = msisdn;
-		this.operatorName = operatorName;
-		this.msgLang = msgLang;
-		this.sendSmsInterface = sendSmsInterface;
+		this.smsScheduledTime = smsScheduledTime;
 	}
 
 	public Long getId() {
@@ -266,14 +249,6 @@ public class Notification implements Serializable{
 		this.receiverUserType = receiverUserType;
 	}
 
-	public Integer getAuthorityStatus() {
-		return authorityStatus;
-	}
-
-	public void setAuthorityStatus(Integer authorityStatus) {
-		this.authorityStatus = authorityStatus;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -338,36 +313,51 @@ public class Notification implements Serializable{
 		this.deliveryTime = deliveryTime;
 	}
 
+	public String getSendSmsInterface() {
+		return sendSmsInterface;
+	}
+
+	public void setSendSmsInterface(String sendSmsInterface) {
+		this.sendSmsInterface = sendSmsInterface;
+	}
+
+	public LocalDateTime getSmsScheduledTime() {
+		return smsScheduledTime;
+	}
+
+	public void setSmsScheduledTime(LocalDateTime smsScheduledTime) {
+		this.smsScheduledTime = smsScheduledTime;
+	}
+
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("Notification{");
-		sb.append("id=").append(id);
-		sb.append(", createdOn=").append(createdOn);
-		sb.append(", modifiedOn=").append(modifiedOn);
-		sb.append(", channelType='").append(channelType).append('\'');
-		sb.append(", message='").append(message).append('\'');
-		sb.append(", userId=").append(userId);
-		sb.append(", featureId=").append(featureId);
-		sb.append(", featureTxnId='").append(featureTxnId).append('\'');
-		sb.append(", featureName='").append(featureName).append('\'');
-		sb.append(", subFeature='").append(subFeature).append('\'');
-		sb.append(", status=").append(status);
-		sb.append(", subject='").append(subject).append('\'');
-		sb.append(", retryCount=").append(retryCount);
-		sb.append(", referTable='").append(referTable).append('\'');
-		sb.append(", roleType='").append(roleType).append('\'');
-		sb.append(", receiverUserType='").append(receiverUserType).append('\'');
-		sb.append(", authorityStatus=").append(authorityStatus);
-		sb.append(", email='").append(email).append('\'');
-		sb.append(", msisdn='").append(msisdn).append('\'');
-		sb.append(", operatorName='").append(operatorName).append('\'');
-		sb.append(", notificationSentTime=").append(notificationSentTime);
-		sb.append(", corelationId='").append(corelationId).append('\'');
-		sb.append(", msgLang='").append(msgLang).append('\'');
-		sb.append(", deliveryStatus=").append(deliveryStatus);
-		sb.append(", deliveryTime=").append(deliveryTime);
-		sb.append(", sendSmsInterface='").append(sendSmsInterface).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "Notification{" +
+				"id=" + id +
+				", createdOn=" + createdOn +
+				", modifiedOn=" + modifiedOn +
+				", channelType='" + channelType + '\'' +
+				", message='" + message + '\'' +
+				", userId=" + userId +
+				", featureId=" + featureId +
+				", featureTxnId='" + featureTxnId + '\'' +
+				", featureName='" + featureName + '\'' +
+				", subFeature='" + subFeature + '\'' +
+				", status=" + status +
+				", subject='" + subject + '\'' +
+				", retryCount=" + retryCount +
+				", referTable='" + referTable + '\'' +
+				", roleType='" + roleType + '\'' +
+				", receiverUserType='" + receiverUserType + '\'' +
+				", email='" + email + '\'' +
+				", msisdn='" + msisdn + '\'' +
+				", operatorName='" + operatorName + '\'' +
+				", notificationSentTime=" + notificationSentTime +
+				", corelationId='" + corelationId + '\'' +
+				", msgLang='" + msgLang + '\'' +
+				", deliveryStatus=" + deliveryStatus +
+				", deliveryTime=" + deliveryTime +
+				", sendSmsInterface='" + sendSmsInterface + '\'' +
+				", smsScheduledTime=" + smsScheduledTime +
+				'}';
 	}
 }

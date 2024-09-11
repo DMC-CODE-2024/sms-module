@@ -45,7 +45,7 @@ public class SmartSms implements SmsManagementService{
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
     @Override
-    public String sendSms(String to, String from, String message, String correlationId, String msgLang) {
+    public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
         try {
             log.info("Sending sms via Smart: "+to+","+from+","+message+","+","+correlationId);
             String token = null;
