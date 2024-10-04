@@ -57,7 +57,7 @@ public class KannelUtils {
 
             HttpGet httpGet = new HttpGet(uriBuilder.build());
 
-            System.out.println("Final Request URL for to: " + to + ", url: " + httpGet.getURI().toString());
+            System.out.println("Final Request URL for" + operatorName+ " => to: " + to + ", url: " + httpGet.getURI().toString());
 
             HttpResponse httpResponse = httpClient.execute(httpGet);
             int statusCode = httpResponse.getStatusLine().getStatusCode();

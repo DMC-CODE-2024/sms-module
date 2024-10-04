@@ -16,8 +16,6 @@ import java.util.Map;
 @Component
 public class KanelService implements SmsManagementService{
     private final Logger log = LogManager.getLogger(getClass());
-    @Value("${dlrMask}")
-    private String dlrMaskValue;
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
 
@@ -33,13 +31,13 @@ public class KanelService implements SmsManagementService{
             SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("password"));
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("callback_url"));
             SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag(operatorPropertyMap.get("smsc"));
+            SystemConfigurationDb dlrMask = systemConfigRepoImpl.getDataByTag("kanelDlrMask");
 
-            String dlrMask = dlrMaskValue;
             String coding = "0";
             if(msgLang.equals("kh")) {
                 coding = "2";
             }
-            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.METFONE.getValue(), smsc.getValue());
+            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask.getValue(), callbackUrl.getValue(), coding, correlationId, OperatorTypes.METFONE.getValue(), smsc.getValue());
             log.info("Response from Metfone "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {

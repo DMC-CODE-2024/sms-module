@@ -15,8 +15,6 @@ import java.rmi.ServerException;
 @Component
 public class CellCardSms implements SmsManagementService{
     private final Logger log = LogManager.getLogger(getClass());
-    @Value("${dlrMask}")
-    private String dlrMaskValue;
     @Autowired
     SystemConfigurationDbRepoImpl systemConfigRepoImpl;
 
@@ -29,12 +27,12 @@ public class CellCardSms implements SmsManagementService{
             SystemConfigurationDb password = systemConfigRepoImpl.getDataByTag("cellcard_password");
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("cellcard_callback_url");
             SystemConfigurationDb smsc = systemConfigRepoImpl.getDataByTag("cellcard_smsc_code");
-            String dlrMask = dlrMaskValue;
+            SystemConfigurationDb dlrMask = systemConfigRepoImpl.getDataByTag("kanelDlrMask");
             String coding = "0";
             if(msgLang.equals("kh")) {
                 coding = "2";
             }
-            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask, callbackUrl.getValue(), coding, correlationId, OperatorTypes.CELLCARD.getValue(), smsc.getValue());
+            String resp = KannelUtils.sendSMS(url.getValue(), from, to, username.getValue(), password.getValue(), message, dlrMask.getValue(), callbackUrl.getValue(), coding, correlationId, OperatorTypes.CELLCARD.getValue(), smsc.getValue());
             log.info("Response from Cellcard "+ resp);
             return "SUCCESS";
         } catch (ClientProtocolException cp) {
