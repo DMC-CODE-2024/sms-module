@@ -1,5 +1,5 @@
 /*
- * package com.ceir.CeirCode.configuration; import javax.sql.DataSource; import
+ * package com.ceir.CeirCode.configuration; import jakarta.sql.DataSource; import
  * org.springframework.beans.factory.annotation.Qualifier; import
  * org.springframework.boot.context.properties.ConfigurationProperties; import
  * org.springframework.boot.jdbc.DataSourceBuilder; import

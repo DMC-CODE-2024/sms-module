@@ -14,7 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -27,12 +27,16 @@ import java.util.Optional;
 public class DefaultSms implements SmsManagementService{
 
     private final Logger log = LogManager.getLogger(getClass());
-    @Autowired
-    SystemConfigurationDbRepoImpl systemConfigRepoImpl;
-    @Autowired
-    SmsSendFactory smsSendFactory;
-    @Autowired
-    OperatorRepository operatorRepository;
+    private final SystemConfigurationDbRepoImpl systemConfigRepoImpl;
+
+    private final SmsSendFactory smsSendFactory;
+    private final OperatorRepository operatorRepository;
+
+    public DefaultSms(SystemConfigurationDbRepoImpl systemConfigRepoImpl, @Lazy SmsSendFactory smsSendFactory, OperatorRepository operatorRepository) {
+        this.systemConfigRepoImpl = systemConfigRepoImpl;
+        this.smsSendFactory = smsSendFactory;
+        this.operatorRepository = operatorRepository;
+    }
 
     @Override
     public String sendSms(String operatorName, String to, String from, String message, String correlationId, String msgLang) {
