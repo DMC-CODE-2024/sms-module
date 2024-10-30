@@ -63,6 +63,9 @@ public class SmsService implements Runnable {
     @Autowired
     private VirtualIpAddressUtil virtualIpAddressUtil;
 
+    @Autowired
+            private AlertService alertService;
+
     int successCount;
 
     int failureCount;
@@ -109,10 +112,13 @@ public class SmsService implements Runnable {
                 for (String values : this.operators)
                     System.out.println("operators : " + values);
         } catch (IllegalArgumentException e) {
-            Optional<CfgFeatureAlert> alert = this.cfgFeatureAlertRepository.findByAlertId("alert1205");
+            /*Optional<CfgFeatureAlert> alert = this.cfgFeatureAlertRepository.findByAlertId("alert1205");
             this.log.error("Raising alert1205");
             System.out.println("Raising alert1205");
-            alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));
+            alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));*/
+            this.log.error("Raising alert1205");
+            System.out.println("Raising alert1205");
+            this.alertService.raiseAlert("alert1205", "", Integer.valueOf(0));
             e.printStackTrace();
             System.exit(0);
         }
@@ -143,10 +149,13 @@ public class SmsService implements Runnable {
                 sleepForSeconds(this.smsSleepTimer.intValue());
             }
         } catch (Exception e) {
-            this.log.error("Raising alert1202");
+            /*this.log.error("Raising alert1202");
             System.out.println("Raising alert1202");
             Optional<CfgFeatureAlert> alert = this.cfgFeatureAlertRepository.findByAlertId("alert1202");
-            alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));
+            alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));*/
+            this.log.error("Raising alert1202");
+            System.out.println("Raising alert1202");
+            this.alertService.raiseAlert("alert1202", "", Integer.valueOf(0));
             e.printStackTrace();
             System.exit(0);
             return;
@@ -306,9 +315,8 @@ public class SmsService implements Runnable {
     }
 
     private void raiseAlert(String alertId, String alertMessage) {
-        Optional<CfgFeatureAlert> alert = this.cfgFeatureAlertRepository.findByAlertId(alertId);
         this.log.warn("Raising {}", alertId);
-        alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), alertMessage, "SMS_MODULE", 0));
+        this.alertService.raiseAlert(alertId, alertMessage, Integer.valueOf(0));
     }
 
     private void handleDataAccessException(DataAccessException e) {
