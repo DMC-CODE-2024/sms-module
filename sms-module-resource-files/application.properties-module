@@ -1,0 +1,21 @@
+# hikari config
+spring.datasource.hikari.maximum-pool-size=5
+spring.datasource.hikari.minimum-idle=1
+
+#spring.datasource.hikari.pool-name=EmailService
+spring.datasource.hikari.pool-name=SMSService
+
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.initialize=true
+spring.main.web-application-type=none
+logging.level.org.hibernate.SQL=none
+
+# sms service config
+dlrMask=31
+
+virtualIp=vm-tmg-l
+
+# sms check in db to send to notification in every 1000ms
+smsSleepTimer=1000
