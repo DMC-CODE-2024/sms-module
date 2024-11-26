@@ -89,4 +89,16 @@ public class Operator implements Serializable {
                 ", properties=" + properties +
                 '}';
     }
+
+    public Operator() {
+    }
+
+    public Operator(Long id, LocalDateTime createdOn, LocalDateTime modifiedOn, String operatorName, String channelType, List<OperatorProperties> properties) {
+        this.id = id;
+        this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
+        this.operatorName = operatorName;
+        this.channelType = channelType;
+        this.properties = properties;
+    }
 }

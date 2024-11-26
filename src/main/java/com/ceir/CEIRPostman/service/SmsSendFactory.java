@@ -29,7 +29,7 @@ public class SmsSendFactory {
 
     public SmsManagementService getSmsManagementService
             (String operator, String channelType) {
-        if(channelType.equals(ChannelType.kanel.name())){
+        if(channelType.equals(ChannelType.kannel.name())){
             return kanelService;
         } else if(channelType.equals(ChannelType.macra_custom.name())) {
             return macraCustom;

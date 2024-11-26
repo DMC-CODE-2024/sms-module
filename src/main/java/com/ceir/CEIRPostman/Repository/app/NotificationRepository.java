@@ -6,38 +6,96 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-	@Query("select noti from Notification noti where noti.status=?1 and upper(noti.channelType)=upper(?2)")
-	List<Notification> findByStatusAndChannelType(int paramInt, String paramString);
 
-	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqual(int paramInt, String paramString1, String paramString2, LocalDateTime paramLocalDateTime);
+	// Find notifications by status and channel type (case-insensitive for channelType)
+	@Query("SELECT n FROM Notification n WHERE n.status = :status AND UPPER(n.channelType) = UPPER(:channelType)")
+	List<Notification> findByStatusAndChannelType(@Param("status") int status, @Param("channelType") String channelType);
 
-	List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelType(int paramInt1, int paramInt2, String paramString1, String paramString2);
+	// Find notifications by status, channel type, operator name, and modified date
+	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnGreaterThanEqual(
+			int status,
+			String channelType,
+			String operatorName,
+			LocalDateTime modifiedOn
+	);
 
-	List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelTypeAndSmsScheduledTimeLessThanEqual(int paramInt1, int paramInt2, String paramString1, String paramString2, LocalDateTime paramLocalDateTime);
+	// Find notifications by status, retry count, operator name, and channel type
+	List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelType(
+			int status,
+			int retryCount,
+			String operatorName,
+			String channelType
+	);
 
-	List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelType(int paramInt1, int paramInt2, List<String> paramList, String paramString);
+	// Find notifications by status, retry count, operator name, channel type, and scheduled time
+	List<Notification> findByStatusAndRetryCountAndOperatorNameAndChannelTypeAndSmsScheduledTimeLessThanEqual(
+			int status,
+			int retryCount,
+			String operatorName,
+			String channelType,
+			LocalDateTime smsScheduledTime
+	);
 
-	List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelTypeAndSmsScheduledTimeLessThanEqual(int paramInt1, int paramInt2, List<String> paramList, String paramString, LocalDateTime paramLocalDateTime);
+	// Find notifications by status, retry count, multiple operator names, and channel type
+	List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelType(
+			int status,
+			int retryCount,
+			List<String> operatorNames,
+			String channelType
+	);
 
+	// Find notifications by status, retry count, multiple operator names, channel type, and scheduled time
+	List<Notification> findByStatusAndRetryCountAndOperatorNameInAndChannelTypeAndSmsScheduledTimeLessThanEqual(
+			int status,
+			int retryCount,
+			List<String> operatorNames,
+			String channelType,
+			LocalDateTime smsScheduledTime
+	);
+
+	// Custom query: Find notifications by multiple criteria
 	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType AND n.operatorName = :operatorName AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
-	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(int paramInt1, String paramString1, String paramString2, LocalDateTime paramLocalDateTime, int paramInt2);
+	List<Notification> findByStatusAndChannelTypeAndOperatorNameAndModifiedOnAndRetryCountGreaterThan(
+			@Param("status") int status,
+			@Param("channelType") String channelType,
+			@Param("operatorName") String operatorName,
+			@Param("modifiedOn") LocalDateTime modifiedOn,
+			@Param("retryCount") int retryCount
+	);
 
+	// Custom query: Find notifications with multiple operator names and other criteria
 	@Query("SELECT n FROM Notification n WHERE n.status = :status AND n.channelType = :channelType AND n.operatorName IN :operatorNames AND n.modifiedOn <= :modifiedOn AND n.retryCount >= :retryCount")
-	List<Notification> findByStatusAndChannelTypeAndOperatorNameInAndModifiedOnAndRetryCountGreaterThan(int paramInt1, String paramString, List<String> paramList, LocalDateTime paramLocalDateTime, int paramInt2);
+	List<Notification> findByStatusAndChannelTypeAndOperatorNameInAndModifiedOnAndRetryCountGreaterThan(
+			@Param("status") int status,
+			@Param("channelType") String channelType,
+			@Param("operatorNames") List<String> operatorNames,
+			@Param("modifiedOn") LocalDateTime modifiedOn,
+			@Param("retryCount") int retryCount
+	);
 
+	// Update retry count by ID
 	@Modifying
 	@Query("UPDATE Notification n SET n.retryCount = :retryCount WHERE n.id = :id")
-	void updateRetryCountById(Long paramLong, Integer paramInteger);
+	void updateRetryCountById(@Param("id") Long id, @Param("retryCount") Integer retryCount);
 
+	// Update status by ID
 	@Modifying
 	@Query("UPDATE Notification n SET n.status = :status WHERE n.id = :id")
-	void updateStatusById(Long paramLong, Integer paramInteger);
+	void updateStatusById(@Param("id") Long id, @Param("status") Integer status);
 
+	// Update status, notification sent time, correlation ID, and delivery status by ID
 	@Modifying
 	@Query("UPDATE Notification n SET n.status = :status, n.notificationSentTime = :notificationSentTime, n.corelationId = :corelationId, n.deliveryStatus = :deliveryStatus WHERE n.id = :id")
-	void updateStatusAndNotificationSentTimeAndCorelationIdById(Long paramLong, Integer paramInteger1, LocalDateTime paramLocalDateTime, String paramString, Integer paramInteger2);
+	void updateStatusAndNotificationSentTimeAndCorelationIdById(
+			@Param("id") Long id,
+			@Param("status") Integer status,
+			@Param("notificationSentTime") LocalDateTime notificationSentTime,
+			@Param("corelationId") String corelationId,
+			@Param("deliveryStatus") Integer deliveryStatus
+	);
 }
