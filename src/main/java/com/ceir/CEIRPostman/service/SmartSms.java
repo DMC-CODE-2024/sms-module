@@ -51,7 +51,7 @@ public class SmartSms implements SmsManagementService{
             String token = null;
             SystemConfigurationDb savedToken = systemConfigRepoImpl.getDataByTag("smart_token");
             SystemConfigurationDb tokenTimeoutInSec = systemConfigRepoImpl.getDataByTag("smart_token_timeout_in_sec");
-            SystemConfigurationDb senderName = systemConfigRepoImpl.getDataByTag("smart_sender_name");
+            SystemConfigurationDb senderName = systemConfigRepoImpl.getDataByTag("smart_sender_id");
             SystemConfigurationDb callbackUrl = systemConfigRepoImpl.getDataByTag("smart_callback_url");
             Date lastUpdated = savedToken.getModifiedOn();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");

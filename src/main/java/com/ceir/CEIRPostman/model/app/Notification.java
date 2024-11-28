@@ -70,10 +70,10 @@ public class Notification implements Serializable{
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime notificationSentTime;
 
-	@Column(nullable = false, unique = true)
+	@Column
 	private String corelationId;
 
-	@Column(nullable = false)
+	@Column
 	private String msgLang;
 
 	@Column
