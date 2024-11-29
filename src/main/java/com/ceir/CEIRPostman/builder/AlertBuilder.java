@@ -21,7 +21,7 @@ public class AlertBuilder {
         return AlertDTO.builder()
                 .alertId(alertId)
                 .alertMessage(alertMessage)
-                .alertProcess("SMS_MODULE")
+                .alertProcess("SMS Notification")
                 .description("")
                 .featureName("Send Sms")
                 .ip(ip)
