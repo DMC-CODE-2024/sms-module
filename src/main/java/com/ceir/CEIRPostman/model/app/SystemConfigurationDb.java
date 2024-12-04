@@ -59,6 +59,8 @@ public class SystemConfigurationDb implements Serializable {
 	public SystemConfigurationDb(String tag, String value) {
 		this.tag = tag;
 		this.value = value;
+		this.modifiedBy = "system";
+		this.userType = "system";
 	}
 
 	public Integer getId() {
